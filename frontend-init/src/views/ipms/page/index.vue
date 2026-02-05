@@ -7,9 +7,9 @@
     </el-form>
 
     <el-table v-loading="loading" :data="pageList" @selection-change="handleSelectionChange">
-      <el-table-column label="标题" align="center" prop="title"/>
-      <el-table-column label="副标题" align="center" prop="subtitle"/>
-      <el-table-column label="页脚" align="center" prop="footer"/>
+      <el-table-column label="标题" prop="title"/>
+      <el-table-column label="副标题" prop="subtitle"/>
+      <el-table-column label="页脚" align="center" prop="footer" width="500"/>
       <el-table-column label="背景图" align="center" prop="backgroundImage" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.backgroundImage" :width="50" :height="50"/>

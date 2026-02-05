@@ -1,13 +1,16 @@
 <template>
-  <div class="sidebar-logo-container" :class="{'collapse':collapse}" :style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }">
+  <div class="sidebar-logo-container" :class="{'collapse':collapse}"
+       :style="{ backgroundColor: sideTheme === 'theme-dark' ? variables.menuBackground : variables.menuLightBackground }">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 v-else class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }} </h1>
+        <h1 class="sidebar-title"
+            :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">
+          {{ title }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
-        <h1 class="sidebar-title" :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">{{ title }} </h1>
+        <h1 class="sidebar-title"
+            :style="{ color: sideTheme === 'theme-dark' ? variables.logoTitleColor : variables.logoLightTitleColor }">
+          {{ title }} </h1>
       </router-link>
     </transition>
   </div>
@@ -16,6 +19,7 @@
 <script>
 import logoImg from '@/assets/logo/logo.png'
 import variables from '@/assets/styles/variables.scss'
+import {listPage} from '@/api/ipms/page'
 
 export default {
   name: 'SidebarLogo',
@@ -37,6 +41,20 @@ export default {
     return {
       title: process.env.VUE_APP_TITLE,
       logo: logoImg
+    }
+  },
+  created() {
+    this.getPageTitle()
+  },
+  methods: {
+    getPageTitle() {
+      listPage({pageNum: 1, pageSize: 1}).then(res => {
+        const rows = res && res.rows ? res.rows : []
+        if (rows.length && rows[0].title) {
+          this.title = rows[0].title
+        }
+      }).catch(() => {
+      })
     }
   }
 }
@@ -74,11 +92,11 @@ export default {
 
     & .sidebar-title {
       display: inline-block;
-      margin: 0;
+      margin: 10px;
       color: #fff;
       font-weight: 600;
       line-height: 50px;
-      font-size: 14px;
+      font-size: 20px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;
     }

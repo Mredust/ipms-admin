@@ -1,19 +1,19 @@
 package com.ruoyi.ipms.service;
 
-import java.util.List;
 import com.ruoyi.ipms.domain.LoginPage;
+
+import java.util.List;
 
 /**
  * 登录页Service接口
- * 
+ *
  * @author Mredust
  * @date 2026-02-05
  */
-public interface ILoginPageService 
-{
+public interface ILoginPageService {
     /**
      * 查询登录页
-     * 
+     *
      * @param id 登录页主键
      * @return 登录页
      */
@@ -21,7 +21,7 @@ public interface ILoginPageService
 
     /**
      * 查询登录页列表
-     * 
+     *
      * @param loginPage 登录页
      * @return 登录页集合
      */
@@ -29,7 +29,7 @@ public interface ILoginPageService
 
     /**
      * 新增登录页
-     * 
+     *
      * @param loginPage 登录页
      * @return 结果
      */
@@ -37,7 +37,7 @@ public interface ILoginPageService
 
     /**
      * 修改登录页
-     * 
+     *
      * @param loginPage 登录页
      * @return 结果
      */
@@ -45,7 +45,7 @@ public interface ILoginPageService
 
     /**
      * 批量删除登录页
-     * 
+     *
      * @param ids 需要删除的登录页主键集合
      * @return 结果
      */
@@ -53,7 +53,7 @@ public interface ILoginPageService
 
     /**
      * 删除登录页信息
-     * 
+     *
      * @param id 登录页主键
      * @return 结果
      */
