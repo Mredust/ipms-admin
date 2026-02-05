@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.LoginPageMapper">
+    
+    <resultMap type="LoginPage" id="LoginPageResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="subtitle"    column="subtitle"    />
+        <result property="footer"    column="footer"    />
+        <result property="backgroundImage"    column="background_image"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLoginPageVo">
+        select id, title, subtitle, footer, background_image, create_time, update_time from login_page
+    </sql>
+
+    <select id="selectLoginPageList" parameterType="LoginPage" resultMap="LoginPageResult">
+        <include refid="selectLoginPageVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectLoginPageById" parameterType="Long" resultMap="LoginPageResult">
+        <include refid="selectLoginPageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertLoginPage" parameterType="LoginPage" useGeneratedKeys="true" keyProperty="id">
+        insert into login_page
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">title,</if>
+            <if test="subtitle != null">subtitle,</if>
+            <if test="footer != null">footer,</if>
+            <if test="backgroundImage != null">background_image,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">#{title},</if>
+            <if test="subtitle != null">#{subtitle},</if>
+            <if test="footer != null">#{footer},</if>
+            <if test="backgroundImage != null">#{backgroundImage},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLoginPage" parameterType="LoginPage">
+        update login_page
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title = #{title},</if>
+            <if test="subtitle != null">subtitle = #{subtitle},</if>
+            <if test="footer != null">footer = #{footer},</if>
+            <if test="backgroundImage != null">background_image = #{backgroundImage},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLoginPageById" parameterType="Long">
+        delete from login_page where id = #{id}
+    </delete>
+
+    <delete id="deleteLoginPageByIds" parameterType="String">
+        delete from login_page where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
