@@ -1,12 +1,12 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.ipms.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.OrganizationMapper;
-import com.ruoyi.system.domain.Organization;
-import com.ruoyi.system.service.IOrganizationService;
+import com.ruoyi.ipms.mapper.OrganizationMapper;
+import com.ruoyi.ipms.domain.Organization;
+import com.ruoyi.ipms.service.IOrganizationService;
 
 /**
  * 机构Service业务层处理

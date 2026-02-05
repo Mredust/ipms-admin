@@ -1,7 +1,7 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.ipms.mapper;
 
 import java.util.List;
-import com.ruoyi.system.domain.Organization;
+import com.ruoyi.ipms.domain.Organization;
 
 /**
  * 机构Mapper接口

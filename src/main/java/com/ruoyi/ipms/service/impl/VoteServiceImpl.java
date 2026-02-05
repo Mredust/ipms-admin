@@ -1,12 +1,12 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.ipms.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.VoteMapper;
+import com.ruoyi.ipms.mapper.VoteMapper;
 import com.ruoyi.system.domain.Vote;
-import com.ruoyi.system.service.IVoteService;
+import com.ruoyi.ipms.service.IVoteService;
 
 /**
  * 投票Service业务层处理

@@ -1,4 +1,4 @@
-package com.ruoyi.system.controller;
+package com.ruoyi.ipms.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
@@ -16,8 +16,8 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.Meeting;
-import com.ruoyi.system.service.IMeetingService;
+import com.ruoyi.ipms.domain.Meeting;
+import com.ruoyi.ipms.service.IMeetingService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
 

@@ -1,7 +1,7 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.ipms.mapper;
 
 import java.util.List;
-import com.ruoyi.system.domain.LoginPage;
+import com.ruoyi.ipms.domain.LoginPage;
 
 /**
  * 登录页Mapper接口

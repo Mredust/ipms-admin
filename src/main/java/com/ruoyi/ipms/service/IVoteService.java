@@ -1,4 +1,4 @@
-package com.ruoyi.system.service;
+package com.ruoyi.ipms.service;
 
 import java.util.List;
 import com.ruoyi.system.domain.Vote;

@@ -4,9 +4,9 @@ import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.MeetingFeatureMapper;
-import com.ruoyi.system.domain.MeetingFeature;
-import com.ruoyi.system.service.IMeetingFeatureService;
+import com.ruoyi.ipms.mapper.MeetingFeatureMapper;
+import com.ruoyi.ipms.domain.MeetingFeature;
+import com.ruoyi.ipms.service.IMeetingFeatureService;
 
 /**
  * 会议功能Service业务层处理

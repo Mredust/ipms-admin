@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.ipms.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;

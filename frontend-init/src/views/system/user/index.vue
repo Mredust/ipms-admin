@@ -21,53 +21,52 @@
           <el-col>
             <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
                      label-width="68px">
-              <el-form-item label="所属部门ID" prop="deptId">
-                <el-input
-                  v-model="queryParams.deptId"
-                  placeholder="请输入所属部门ID"
-                  clearable
-                  @keyup.enter.native="handleQuery"
-                />
-              </el-form-item>
-              <el-form-item label="姓名" prop="nickName">
-                <el-input
-                  v-model="queryParams.nickName"
-                  placeholder="请输入姓名"
-                  clearable
-                  @keyup.enter.native="handleQuery"
-                />
-              </el-form-item>
-              <el-form-item label="登录名" prop="userName">
-                <el-input
-                  v-model="queryParams.userName"
-                  placeholder="请输入登录名"
-                  clearable
-                  @keyup.enter.native="handleQuery"
-                />
-              </el-form-item>
-              <el-form-item label="所属单位ID" prop="orgId">
-                <el-input
-                  v-model="queryParams.orgId"
-                  placeholder="请输入所属单位ID"
-                  clearable
-                  @keyup.enter.native="handleQuery"
-                />
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-                <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-              </el-form-item>
+              <el-row>
+                <el-form-item label="所属部门" prop="deptId">
+                  <el-input
+                    v-model="queryParams.deptId"
+                    placeholder="请输入所属部门"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                  />
+                </el-form-item>
+                <el-form-item label="姓名" prop="nickName">
+                  <el-input
+                    v-model="queryParams.nickName"
+                    placeholder="请输入姓名"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                  />
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="所属单位" prop="orgId">
+                  <el-input
+                    v-model="queryParams.orgId"
+                    placeholder="请输入所属单位"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                  />
+                </el-form-item>
+                <el-form-item label="登录名" prop="userName">
+                  <el-input
+                    v-model="queryParams.userName"
+                    placeholder="请输入登录名"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                  />
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">查询</el-button>
+                  <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+                </el-form-item>
+              </el-row>
             </el-form>
 
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
                 <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                           v-hasPermi="['system:user:add']">新增
-                </el-button>
-              </el-col>
-              <el-col :span="1.5">
-                <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                           v-hasPermi="['system:user:edit']">修改
+                           v-hasPermi="['system:user:add']">添加用户
                 </el-button>
               </el-col>
               <el-col :span="1.5">
@@ -90,11 +89,16 @@
 
             <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="50" align="center"/>
-              <el-table-column label="姓名" align="center" prop="nickName"/>
               <el-table-column label="登录名" align="center" prop="userName"/>
-              <el-table-column label="职务" align="center" prop="position"/>
-              <el-table-column label="单位" align="center" prop="unit"/>
+              <el-table-column label="姓名" align="center" prop="nickName"/>
               <el-table-column label="工号" align="center" prop="employeeNo"/>
+              <el-table-column label="职务" align="center" prop="position"/>
+              <el-table-column label="单位" align="center">
+                <template slot-scope="scope">
+                  {{ scope.row.dept && scope.row.dept.deptName ? scope.row.dept.deptName : "" }}
+                </template>
+              </el-table-column>
+              <el-table-column label="状态" align="center" prop="status"/>
               <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
                 <template slot-scope="scope" v-if="scope.row.userId !== 1">
                   <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
@@ -103,18 +107,6 @@
                   <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
                              v-hasPermi="['system:user:remove']">删除
                   </el-button>
-                  <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
-                               v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
-                    <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
-                                        v-hasPermi="['system:user:resetPwd']">重置密码
-                      </el-dropdown-item>
-                      <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
-                                        v-hasPermi="['system:user:edit']">分配角色
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
                 </template>
               </el-table-column>
             </el-table>
@@ -146,10 +138,10 @@
         <el-form-item label="登录名" prop="userName">
           <el-input v-model="form.userName" placeholder="请输入登录名"/>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
+        <el-form-item v-if="!form.userId" label="密码" prop="password">
           <el-input v-model="form.password" placeholder="请输入密码"/>
         </el-form-item>
-        <el-form-item label="确认密码" prop="checkPassword">
+        <el-form-item v-if="!form.userId" label="确认密码" prop="checkPassword">
           <el-input v-model="form.checkPassword" placeholder="请确认密码"/>
         </el-form-item>
         <el-form-item label="职务" prop="position">
@@ -164,20 +156,25 @@
         <el-form-item label="电话" prop="phonenumber">
           <el-input v-model="form.phonenumber" placeholder="请输入电话"/>
         </el-form-item>
-        <el-form-item label="角色">
-          <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
-            <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId"
-                       :disabled="item.status == 1"></el-option>
-          </el-select>
+        <el-form-item label="角色" prop="roleIds">
+          <el-checkbox-group v-model="form.roleIds">
+            <el-checkbox
+              v-for="item in roleOptions"
+              :key="item.roleId"
+              :label="item.roleId"
+              :disabled="item.status == 1"
+            >{{ item.roleName }}
+            </el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
-        <el-form-item label="头像地址" prop="avatar">
-          <image-upload v-model="form.avatar"/>
+        <el-form-item label="头像" prop="avatar">
+          <image-upload v-model="form.avatar" :limit="1"/>
         </el-form-item>
         <el-form-item label="签名" prop="sign">
-          <image-upload v-model="form.sign"/>
+          <image-upload v-model="form.sign" :limit="1"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -234,6 +231,37 @@ export default {
   dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: {Treeselect, Splitpanes, Pane},
   data() {
+    const validatePasswordRequired = (rule, value, callback) => {
+      if (this.form && this.form.userId) {
+        return callback()
+      }
+      if (!value) {
+        return callback(new Error("用户密码不能为空"))
+      }
+      callback()
+    }
+    const validatePassword = (rule, value, callback) => {
+      if (this.form && this.form.checkPassword !== undefined) {
+        this.$nextTick(() => {
+          if (this.$refs.form) {
+            this.$refs.form.validateField("checkPassword")
+          }
+        })
+      }
+      callback()
+    }
+    const validateCheckPassword = (rule, value, callback) => {
+      if (this.form && this.form.userId) {
+        return callback()
+      }
+      if (!value) {
+        return callback(new Error("确认密码不能为空"))
+      }
+      if (value !== this.form.password) {
+        return callback(new Error("两次输入的密码不一致"))
+      }
+      callback()
+    }
     return {
       // 遮罩层
       loading: true,
@@ -319,10 +347,17 @@ export default {
         nickName: [
           {required: true, message: "姓名不能为空", trigger: "blur"}
         ],
+        roleIds: [
+          {required: true, type: "array", message: "角色不能为空", trigger: "change"}
+        ],
         password: [
-          {required: true, message: "用户密码不能为空", trigger: "blur"},
-          {min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur'},
-          {pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur"}
+          {validator: validatePasswordRequired, trigger: ["blur", "change"]},
+          {min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: ["blur", "change"]},
+          {pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: ["blur", "change"]},
+          {validator: validatePassword, trigger: ["blur", "change"]}
+        ],
+        checkPassword: [
+          {validator: validateCheckPassword, trigger: ["blur", "change"]}
         ],
       }
     }
@@ -404,6 +439,7 @@ export default {
         userName: undefined,
         nickName: undefined,
         password: undefined,
+        checkPassword: undefined,
         phonenumber: undefined,
         email: undefined,
         sex: undefined,
@@ -501,7 +537,7 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.userId != undefined) {
+          if (this.form.userId !== undefined) {
             updateUser(this.form).then(response => {
               this.$modal.msgSuccess("修改成功")
               this.open = false

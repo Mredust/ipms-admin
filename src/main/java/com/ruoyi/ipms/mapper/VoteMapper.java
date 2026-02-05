@@ -1,19 +1,19 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.ipms.mapper;
+
+import com.ruoyi.system.domain.Vote;
 
 import java.util.List;
-import com.ruoyi.system.domain.Vote;
 
 /**
  * 投票Mapper接口
- * 
+ *
  * @author Mredust
  * @date 2026-02-05
  */
-public interface VoteMapper 
-{
+public interface VoteMapper {
     /**
      * 查询投票
-     * 
+     *
      * @param id 投票主键
      * @return 投票
      */
@@ -21,7 +21,7 @@ public interface VoteMapper
 
     /**
      * 查询投票列表
-     * 
+     *
      * @param vote 投票
      * @return 投票集合
      */
@@ -29,7 +29,7 @@ public interface VoteMapper
 
     /**
      * 新增投票
-     * 
+     *
      * @param vote 投票
      * @return 结果
      */
@@ -37,7 +37,7 @@ public interface VoteMapper
 
     /**
      * 修改投票
-     * 
+     *
      * @param vote 投票
      * @return 结果
      */
@@ -45,7 +45,7 @@ public interface VoteMapper
 
     /**
      * 删除投票
-     * 
+     *
      * @param id 投票主键
      * @return 结果
      */
@@ -53,7 +53,7 @@ public interface VoteMapper
 
     /**
      * 批量删除投票
-     * 
+     *
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */

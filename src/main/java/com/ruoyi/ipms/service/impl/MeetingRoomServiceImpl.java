@@ -1,12 +1,12 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.ipms.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.MeetingRoomMapper;
-import com.ruoyi.system.domain.MeetingRoom;
-import com.ruoyi.system.service.IMeetingRoomService;
+import com.ruoyi.ipms.mapper.MeetingRoomMapper;
+import com.ruoyi.ipms.domain.MeetingRoom;
+import com.ruoyi.ipms.service.IMeetingRoomService;
 
 /**
  * 会议室Service业务层处理

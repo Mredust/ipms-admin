@@ -1,7 +1,7 @@
-package com.ruoyi.system.mapper;
+package com.ruoyi.ipms.mapper;
 
 import java.util.List;
-import com.ruoyi.system.domain.Meeting;
+import com.ruoyi.ipms.domain.Meeting;
 
 /**
  * 会议Mapper接口

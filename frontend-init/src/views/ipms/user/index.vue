@@ -183,6 +183,25 @@ import { listUser, getUser, delUser, addUser, updateUser } from "@/api/ipms/user
 export default {
   name: "User",
   data() {
+    const validatePassword = (rule, value, callback) => {
+      if (this.form && this.form.confirmPassword !== undefined) {
+        this.$nextTick(() => {
+          if (this.$refs.form) {
+            this.$refs.form.validateField("confirmPassword")
+          }
+        })
+      }
+      callback()
+    }
+    const validateConfirmPassword = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error("确认密码不能为空"))
+      }
+      if (value !== this.form.password) {
+        return callback(new Error("两次输入的密码不一致"))
+      }
+      callback()
+    }
     return {
       // 遮罩层
       loading: true,
@@ -225,10 +244,12 @@ export default {
           { required: true, message: "登录名不能为空", trigger: "blur" }
         ],
         password: [
-          { required: true, message: "密码不能为空", trigger: "blur" }
+          { required: true, message: "密码不能为空", trigger: ["blur", "change"] },
+          { validator: validatePassword, trigger: ["blur", "change"] }
         ],
         confirmPassword: [
-          { required: true, message: "确认密码不能为空", trigger: "blur" }
+          { required: true, message: "确认密码不能为空", trigger: ["blur", "change"] },
+          { validator: validateConfirmPassword, trigger: ["blur", "change"] }
         ],
         role: [
           { required: true, message: "用户角色不能为空", trigger: "blur" }

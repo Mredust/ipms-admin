@@ -1,7 +1,7 @@
-package com.ruoyi.system.service;
+package com.ruoyi.ipms.service;
 
 import java.util.List;
-import com.ruoyi.system.domain.Meeting;
+import com.ruoyi.ipms.domain.Meeting;
 
 /**
  * 会议Service接口

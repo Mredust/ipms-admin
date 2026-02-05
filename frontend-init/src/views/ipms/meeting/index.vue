@@ -62,11 +62,7 @@
     </el-row>
 
     <el-table v-loading="loading" :data="meetingList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="所属范围" align="center" prop="scope" />
       <el-table-column label="会议名称" align="center" prop="meetingName" />
-      <el-table-column label="副标题" align="center" prop="subtitle" />
       <el-table-column label="开始时间" align="center" prop="startTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
@@ -77,13 +73,10 @@
           <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="选择会议室" align="center" prop="roomId" />
+      <el-table-column label="会议室" align="center" prop="roomId" />
       <el-table-column label="会议主持人" align="center" prop="hostId" />
       <el-table-column label="会议助理" align="center" prop="assistantId" />
       <el-table-column label="会议类型" align="center" prop="typeId" />
-      <el-table-column label="功能选择" align="center" prop="featureSelect" />
-      <el-table-column label="会议logo" align="center" prop="logo" />
-      <el-table-column label="座位图" align="center" prop="seatChart" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button

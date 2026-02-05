@@ -245,6 +245,7 @@
         <set>
             <if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
             <if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+            <if test="userName != null and nickName != ''">user_name = #{nickName},</if>
             <if test="email != null ">email = #{email},</if>
             <if test="phonenumber != null ">phonenumber = #{phonenumber},</if>
             <if test="sex != null and sex != ''">sex = #{sex},</if>
@@ -256,6 +257,10 @@
             <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="remark != null">remark = #{remark},</if>
             <if test="position != null">position = #{position},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="sign != null and sign != ''">sign = #{sign},</if>
+            <if test="orgId != null and orgId != ''">org_id = #{orgId},</if>
+            <if test="employeeNo != null and employeeNo != ''">employee_no = #{employeeNo},</if>
             update_time = sysdate()
         </set>
         where user_id = #{userId}

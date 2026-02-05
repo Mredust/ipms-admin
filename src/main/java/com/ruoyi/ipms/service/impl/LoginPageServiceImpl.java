@@ -1,12 +1,12 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.ipms.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.LoginPageMapper;
-import com.ruoyi.system.domain.LoginPage;
-import com.ruoyi.system.service.ILoginPageService;
+import com.ruoyi.ipms.mapper.LoginPageMapper;
+import com.ruoyi.ipms.domain.LoginPage;
+import com.ruoyi.ipms.service.ILoginPageService;
 
 /**
  * 登录页Service业务层处理

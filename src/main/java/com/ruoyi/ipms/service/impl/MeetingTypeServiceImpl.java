@@ -1,12 +1,12 @@
-package com.ruoyi.system.service.impl;
+package com.ruoyi.ipms.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.system.mapper.MeetingTypeMapper;
-import com.ruoyi.system.domain.MeetingType;
-import com.ruoyi.system.service.IMeetingTypeService;
+import com.ruoyi.ipms.mapper.MeetingTypeMapper;
+import com.ruoyi.ipms.domain.MeetingType;
+import com.ruoyi.ipms.service.IMeetingTypeService;
 
 /**
  * 会议类型Service业务层处理

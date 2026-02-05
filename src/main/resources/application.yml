@@ -7,7 +7,7 @@ ruoyi:
   # 鐗堟潈骞翠唤
   copyrightYear: 2025
   # 鏂囦欢璺緞 绀轰緥锛?Windows閰嶇疆D:/ruoyi/uploadPath锛孡inux閰嶇疆 /home/ruoyi/uploadPath锛?
-  profile: F:/devpros/ruoyi/backend-init/upload
+  profile: F:/order/智能无纸化会议系统/ipms/backend-init/upload
   # 鑾峰彇ip鍦板潃寮€鍏?
   addressEnabled: false
   # 楠岃瘉鐮佺被鍨?math 鏁板瓧璁＄畻 char 瀛楃楠岃瘉

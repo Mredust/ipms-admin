@@ -1,5 +1,4 @@
-package com.ruoyi.system.domain;
-
+package com.ruoyi.ipms.domain;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
