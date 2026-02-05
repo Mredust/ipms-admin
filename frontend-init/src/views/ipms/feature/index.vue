@@ -18,8 +18,8 @@
     <el-table v-loading="loading" :data="featureList" @selection-change="handleSelectionChange">
       <el-table-column label="功能名称" align="center" prop="featureName"/>
       <el-table-column label="功能别名" align="center" prop="featureAlias"/>
-      <el-table-column label="排序" align="center" prop="sortOrder"/>
       <el-table-column label="颜色选择" align="center" prop="color"/>
+      <el-table-column label="排序" align="center" prop="sortOrder"/>
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -63,7 +63,11 @@
           <el-input v-model="form.sortOrder" placeholder="请输入排序"/>
         </el-form-item>
         <el-form-item label="颜色选择" prop="color">
-          <el-input v-model="form.color" placeholder="请输入颜色选择"/>
+          <el-color-picker
+            v-model="form.color"
+            color-format="hex"
+            @change="handleColorChange"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -118,7 +122,12 @@ export default {
     getList() {
       this.loading = true
       listFeature(this.queryParams).then(response => {
-        this.featureList = response.rows
+        const rows = response.rows || []
+        this.featureList = rows.sort((a, b) => {
+          const aVal = Number(a && a.sortOrder != null ? a.sortOrder : Number.POSITIVE_INFINITY)
+          const bVal = Number(b && b.sortOrder != null ? b.sortOrder : Number.POSITIVE_INFINITY)
+          return aVal - bVal
+        })
         this.total = response.total
         this.loading = false
       })
@@ -160,7 +169,7 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset()
-      this.form.color = '#ffffff'
+      this.form.color = '#FFFFFF'
       this.open = true
       this.title = "添加会议功能"
     },
@@ -170,6 +179,7 @@ export default {
       const id = row.id || this.ids
       getFeature(id).then(response => {
         this.form = response.data
+        this.form.color = this.normalizeHexColor(this.form.color)
         this.open = true
         this.title = "修改会议功能"
       })
@@ -178,6 +188,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          this.form.color = this.normalizeHexColor(this.form.color)
           if (this.form.id != null) {
             updateFeature(this.form).then(response => {
               this.$modal.msgSuccess("修改成功")
@@ -210,6 +221,32 @@ export default {
       this.download('ipms/feature/export', {
         ...this.queryParams
       }, `feature_${new Date().getTime()}.xlsx`)
+    },
+    handleColorChange(color) {
+      this.form.color = this.normalizeHexColor(color)
+    },
+    normalizeHexColor(color) {
+      if (!color) {
+        return color
+      }
+      const hexMatch = color.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/)
+      if (hexMatch) {
+        const raw = hexMatch[1]
+        const full = raw.length === 3
+          ? raw.split("").map(ch => ch + ch).join("")
+          : raw
+        return `#${full.toUpperCase()}`
+      }
+      const rgbMatch = color.match(/^rgba?\(([^)]+)\)$/i)
+      if (rgbMatch) {
+        const parts = rgbMatch[1].split(",").map(item => item.trim())
+        const r = Math.max(0, Math.min(255, parseInt(parts[0], 10)))
+        const g = Math.max(0, Math.min(255, parseInt(parts[1], 10)))
+        const b = Math.max(0, Math.min(255, parseInt(parts[2], 10)))
+        const toHex = (v) => v.toString(16).padStart(2, "0").toUpperCase()
+        return `#${toHex(r)}${toHex(g)}${toHex(b)}`
+      }
+      return color
     }
   }
 }

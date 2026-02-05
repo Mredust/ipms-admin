@@ -25,14 +25,6 @@
             v-hasPermi="['ipms:page:edit']"
           >修改
           </el-button>
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['ipms:page:remove']"
-          >删除
-          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,7 +42,7 @@
           <el-input v-model="form.footer" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="背景图" prop="backgroundImage">
-          <image-upload v-model="form.backgroundImage"/>
+          <image-upload v-model="form.backgroundImage" :limit="1"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
