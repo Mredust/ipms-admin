@@ -16,7 +16,7 @@ ruoyi:
 # 寮€鍙戠幆澧冮厤缃?
 server:
   # 鏈嶅姟鍣ㄧ殑HTTP绔彛锛岄粯璁や负8080
-  port: 8080
+  port: 4040
   servlet:
     # 搴旂敤鐨勮闂矾寰?
     context-path: /

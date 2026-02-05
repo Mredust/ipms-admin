@@ -50,7 +50,7 @@
         </if>
         <!-- 数据范围过滤 -->
         ${params.dataScope}
-        order by d.parent_id, d.order_num
+        order by d.parent_id
     </select>
 
     <select id="selectDeptListByRoleId" resultType="Long">
@@ -62,7 +62,7 @@
             and d.dept_id not in (select d.parent_id from sys_dept d inner join sys_role_dept rd on d.dept_id =
             rd.dept_id and rd.role_id = #{roleId})
         </if>
-        order by d.parent_id, d.order_num
+        order by d.parent_id
     </select>
 
     <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">
@@ -70,7 +70,6 @@
                d.parent_id,
                d.ancestors,
                d.dept_name,
-               d.order_num,
                d.org_code,
                d.org_type,
                d.remark,

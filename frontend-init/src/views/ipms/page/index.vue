@@ -2,63 +2,14 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
       </el-form-item>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['ipms:page:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['ipms:page:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['ipms:page:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['ipms:page:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
     <el-table v-loading="loading" :data="pageList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="标题" align="center" prop="title" />
-      <el-table-column label="副标题" align="center" prop="subtitle" />
-      <el-table-column label="页脚" align="center" prop="footer" />
+      <el-table-column label="标题" align="center" prop="title"/>
+      <el-table-column label="副标题" align="center" prop="subtitle"/>
+      <el-table-column label="页脚" align="center" prop="footer"/>
       <el-table-column label="背景图" align="center" prop="backgroundImage" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.backgroundImage" :width="50" :height="50"/>
@@ -72,37 +23,31 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['ipms:page:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['ipms:page:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
 
     <!-- 添加或修改登录页对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入标题" />
+          <el-input v-model="form.title" placeholder="请输入标题"/>
         </el-form-item>
         <el-form-item label="副标题" prop="subtitle">
-          <el-input v-model="form.subtitle" placeholder="请输入副标题" />
+          <el-input v-model="form.subtitle" placeholder="请输入副标题"/>
         </el-form-item>
         <el-form-item label="页脚" prop="footer">
-          <el-input v-model="form.footer" type="textarea" placeholder="请输入内容" />
+          <el-input v-model="form.footer" type="textarea" placeholder="请输入内容"/>
         </el-form-item>
         <el-form-item label="背景图" prop="backgroundImage">
           <image-upload v-model="form.backgroundImage"/>
@@ -117,7 +62,7 @@
 </template>
 
 <script>
-import { listPage, getPage, delPage, addPage, updatePage } from "@/api/ipms/page"
+import {addPage, delPage, getPage, listPage, updatePage} from "@/api/ipms/page"
 
 export default {
   name: "Page",
@@ -149,8 +94,7 @@ export default {
       // 表单参数
       form: {},
       // 表单校验
-      rules: {
-      }
+      rules: {}
     }
   },
   created() {
@@ -197,7 +141,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -239,12 +183,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除登录页编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除登录页编号为"' + ids + '"的数据项？').then(function () {
         return delPage(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess("删除成功")
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
