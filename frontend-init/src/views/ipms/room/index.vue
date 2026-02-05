@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
       <el-form-item label="会议室名称" prop="name">
         <el-input
           v-model="queryParams.name"
@@ -12,11 +12,6 @@
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
         <el-button
           type="primary"
           plain
@@ -24,67 +19,52 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['ipms:room:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['ipms:room:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['ipms:room:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['ipms:room:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+        >新建会议室
+        </el-button>
+      </el-form-item>
+    </el-form>
 
     <el-table v-loading="loading" :data="roomList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="会议室名称" align="center" prop="name" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="序号" prop="id" align="center" width="100"/>
+      <el-table-column label="会议室名称" prop="name" width="400"/>
+      <el-table-column label="操作" class-name="small-padding fixed-width" align="center">
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-search"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['ipms:room:edit']"
+          >查看
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['ipms:room:edit']"
-          >修改</el-button>
+          >修改
+          </el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['ipms:room:remove']"
-          >删除</el-button>
+          >删除
+          </el-button>
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-search"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['ipms:room:edit']"
+          >议程看板
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -95,9 +75,9 @@
 
     <!-- 添加或修改会议室对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="会议室名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入会议室名称" />
+          <el-input v-model="form.name" placeholder="请输入会议室名称"/>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -109,7 +89,7 @@
 </template>
 
 <script>
-import { listRoom, getRoom, delRoom, addRoom, updateRoom } from "@/api/ipms/room"
+import {addRoom, delRoom, getRoom, listRoom, updateRoom} from "@/api/ipms/room"
 
 export default {
   name: "Room",
@@ -144,7 +124,7 @@ export default {
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "会议室名称不能为空", trigger: "blur" }
+          {required: true, message: "会议室名称不能为空", trigger: "blur"}
         ],
       }
     }
@@ -190,7 +170,7 @@ export default {
     // 多选框选中数据
     handleSelectionChange(selection) {
       this.ids = selection.map(item => item.id)
-      this.single = selection.length!==1
+      this.single = selection.length !== 1
       this.multiple = !selection.length
     },
     /** 新增按钮操作 */
@@ -232,12 +212,13 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids
-      this.$modal.confirm('是否确认删除会议室编号为"' + ids + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除会议室编号为"' + ids + '"的数据项？').then(function () {
         return delRoom(ids)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess("删除成功")
-      }).catch(() => {})
+      }).catch(() => {
+      })
     },
     /** 导出按钮操作 */
     handleExport() {
