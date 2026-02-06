@@ -1,22 +1,17 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="投票主题" prop="voteTitle">
+      <el-form-item label="投票标题" prop="voteTitle">
         <el-input
           v-model="queryParams.voteTitle"
-          placeholder="请输入投票主题"
+          placeholder="请输入投票标题"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
         <el-button
           type="primary"
           plain
@@ -24,31 +19,7 @@
           size="mini"
           @click="handleAdd"
           v-hasPermi="['ipms:vote:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['ipms:vote:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['ipms:vote:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
+        >新建投票</el-button>
         <el-button
           type="warning"
           plain
@@ -56,32 +27,19 @@
           size="mini"
           @click="handleExport"
           v-hasPermi="['ipms:vote:export']"
-        >导出</el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
+        >投票结构导出</el-button>
+      </el-form-item>
+    </el-form>
 
-    <el-table v-loading="loading" :data="voteList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="ID" align="center" prop="id" />
-      <el-table-column label="投票主题" align="center" prop="voteTitle" />
-      <el-table-column label="关联议程主题" align="center" prop="agendaId" />
-      <el-table-column label="投票模式" align="center" prop="voteMode">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.vote_type" :value="scope.row.voteMode"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="投票显示开关：0-关闭，1-开启" align="center" prop="showSwitch">
-        <template slot-scope="scope">
-          <dict-tag :options="dict.type.show_switch" :value="scope.row.showSwitch"/>
-        </template>
-      </el-table-column>
-      <el-table-column label="投票匿名开关：0-关闭，1-开启" align="center" prop="anonymousSwitch">
+    <el-table v-loading="loading" :data="voteList">
+      <el-table-column label="序号" align="center" type="index" width="60" />
+      <el-table-column label="投票标题" align="center" prop="voteTitle" />
+      <el-table-column label="投票说明" align="center" prop="remark" />
+      <el-table-column label="匿名" align="center" prop="anonymousSwitch">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.vote_anonymous" :value="scope.row.anonymousSwitch"/>
         </template>
       </el-table-column>
-      <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -101,7 +59,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -111,10 +69,10 @@
     />
 
     <!-- 添加或修改投票对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="投票主题" prop="voteTitle">
-          <el-input v-model="form.voteTitle" placeholder="请输入投票主题" />
+    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="投票标题" prop="voteTitle">
+          <el-input v-model="form.voteTitle" placeholder="请输入投票标题" />
         </el-form-item>
         <el-form-item label="投票模式" prop="voteMode">
           <el-select v-model="form.voteMode" placeholder="请选择投票模式">
@@ -125,9 +83,10 @@
               :value="dict.value"
             ></el-option>
           </el-select>
+          <div class="form-tip">模式一：赞成，反对，弃权；模式二：赞成，反对</div>
         </el-form-item>
-        <el-form-item label="投票显示开关：0-关闭，1-开启" prop="showSwitch">
-          <el-select v-model="form.showSwitch" placeholder="请选择投票显示开关：0-关闭，1-开启">
+        <el-form-item label="投票显示开关" prop="showSwitch">
+          <el-select v-model="form.showSwitch" placeholder="请选择投票显示开关">
             <el-option
               v-for="dict in dict.type.show_switch"
               :key="dict.value"
@@ -135,9 +94,10 @@
               :value="parseInt(dict.value)"
             ></el-option>
           </el-select>
+          <div class="form-tip">“是”投票项为打开状态；“否”投票项未打开，需要主持人手动开启</div>
         </el-form-item>
-        <el-form-item label="投票匿名开关：0-关闭，1-开启" prop="anonymousSwitch">
-          <el-select v-model="form.anonymousSwitch" placeholder="请选择投票匿名开关：0-关闭，1-开启">
+        <el-form-item label="投票匿名开关" prop="anonymousSwitch">
+          <el-select v-model="form.anonymousSwitch" placeholder="请选择投票匿名开关">
             <el-option
               v-for="dict in dict.type.vote_anonymous"
               :key="dict.value"
@@ -145,6 +105,7 @@
               :value="parseInt(dict.value)"
             ></el-option>
           </el-select>
+          <div class="form-tip">“是”开启匿名投票；“否”开始实名投票</div>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />
@@ -198,10 +159,10 @@ export default {
           { required: true, message: "投票模式不能为空", trigger: "change" }
         ],
         showSwitch: [
-          { required: true, message: "投票显示开关：0-关闭，1-开启不能为空", trigger: "change" }
+          { required: true, message: "投票显示开关不能为空", trigger: "change" }
         ],
         anonymousSwitch: [
-          { required: true, message: "投票匿名开关：0-关闭，1-开启不能为空", trigger: "change" }
+          { required: true, message: "投票匿名开关不能为空", trigger: "change" }
         ],
       }
     }
@@ -231,8 +192,8 @@ export default {
         voteTitle: null,
         agendaId: null,
         voteMode: null,
-        showSwitch: null,
-        anonymousSwitch: null,
+        showSwitch: 1,
+        anonymousSwitch: 1,
         remark: null,
         createTime: null,
         updateTime: null
@@ -310,3 +271,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.form-tip {
+  margin-top: 6px;
+  color: #9e9e9e;
+  font-size: 13px;
+  line-height: 1.4;
+}
+</style>

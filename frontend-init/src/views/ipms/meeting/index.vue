@@ -487,7 +487,10 @@ export default {
       this.reset()
       const id = row.id || this.ids
       getMeeting(id).then(response => {
-        this.form = response.data
+        const data = response.data || {}
+        data.startTime = this.parseTime(data.startTime, "{y}-{m}-{d} {h}:{i}:{s}")
+        data.endTime = this.parseTime(data.endTime, "{y}-{m}-{d} {h}:{i}:{s}")
+        this.form = data
         if (this.form.scope !== null && this.form.scope !== undefined && this.form.scope !== "") {
           const scopeNumber = Number(this.form.scope)
           this.form.deptId = Number.isNaN(scopeNumber) ? this.form.scope : scopeNumber
