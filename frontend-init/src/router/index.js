@@ -62,6 +62,11 @@ export const constantRoutes = [
     hidden: true
   },
   {
+    path: '/ipms/meeting/slogan-preview',
+    component: () => import('@/views/ipms/meeting/sloganPreview'),
+    hidden: true
+  },
+  {
     path: '',
     component: Layout,
     redirect: 'index',
@@ -147,7 +152,28 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/ipms/meeting',
+    component: Layout,
+    hidden: true,
+    permissions: ['ipms:meeting:query'],
+    children: [
+      {
+        path: 'detail/:id(\\d+)',
+        component: () => import('@/views/ipms/meeting/detail'),
+        name: 'MeetingDetail',
+        meta: { title: '\u4f1a\u8bae\u8be6\u60c5', activeMenu: '/ipms/meeting' }
+      },
+      {
+        path: 'agenda-members/:meetingId(\\d+)',
+        component: () => import('@/views/ipms/meeting/agendaMembers'),
+        name: 'AgendaMembers',
+        meta: { title: '\u8bae\u9898\u4eba\u5458', activeMenu: '/ipms/meeting' }
+      }
+    ]
   }
+
 ]
 
 // 防止连续点击多次路由报错

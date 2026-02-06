@@ -69,6 +69,7 @@
             size="mini"
             type="text"
             icon="el-icon-delete"
+          @click="handleView(scope.row)"
           >查看
           </el-button>
           <el-button
@@ -538,6 +539,14 @@ export default {
       })
     },
     /** 删除按钮操作 */
+    handleView(row) {
+      const id = row.id || this.ids
+      if (!id) {
+        this.$modal.msgError("未获取到会议ID")
+        return
+      }
+      this.$router.push({ path: `/ipms/meeting/detail/${id}` })
+    },
     handleDelete(row) {
       const ids = row.id || this.ids
       this.$modal.confirm('是否确认删除会议编号为"' + ids + '"的数据项？').then(function () {
