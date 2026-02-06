@@ -114,6 +114,11 @@ public class SysUser extends BaseEntity {
     private SysDept dept;
 
     /**
+     * 岗位对象
+     */
+    private SysPost post;
+
+    /**
      * 角色对象
      */
     private List<SysRole> roles;
@@ -347,6 +352,14 @@ public class SysUser extends BaseEntity {
         this.dept = dept;
     }
 
+    public SysPost getPost() {
+        return post;
+    }
+
+    public void setPost(SysPost post) {
+        this.post = post;
+    }
+
     public List<SysRole> getRoles() {
         return roles;
     }
@@ -402,6 +415,7 @@ public class SysUser extends BaseEntity {
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())
                 .append("dept", getDept())
+                .append("post", getPost())
                 .toString();
     }
 }

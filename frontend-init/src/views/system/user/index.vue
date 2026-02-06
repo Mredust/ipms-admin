@@ -22,36 +22,40 @@
             <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
                      label-width="68px">
               <el-row>
-                <el-form-item label="所属部门" prop="deptId">
-                  <el-input
-                    v-model="queryParams.deptId"
-                    placeholder="请输入所属部门"
-                    clearable
-                    @keyup.enter.native="handleQuery"
-                  />
-                </el-form-item>
-                <el-form-item label="姓名" prop="nickName">
-                  <el-input
-                    v-model="queryParams.nickName"
-                    placeholder="请输入姓名"
-                    clearable
-                    @keyup.enter.native="handleQuery"
-                  />
-                </el-form-item>
-              </el-row>
-              <el-row>
                 <el-form-item label="所属单位" prop="orgId">
-                  <el-input
+                  <treeselect
                     v-model="queryParams.orgId"
-                    placeholder="请输入所属单位"
+                    :options="enabledDeptOptions"
+                    :show-count="true"
+                    placeholder="请选择所属单位"
                     clearable
-                    @keyup.enter.native="handleQuery"
+                    class="treeselect-inline"
                   />
                 </el-form-item>
                 <el-form-item label="登录名" prop="userName">
                   <el-input
                     v-model="queryParams.userName"
                     placeholder="请输入登录名"
+                    clearable
+                    @keyup.enter.native="handleQuery"
+                  />
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="所属部门" prop="deptId">
+                  <treeselect
+                    v-model="queryParams.deptId"
+                    :options="enabledDeptOptions"
+                    :show-count="true"
+                    placeholder="请选择所属部门"
+                    clearable
+                    class="treeselect-inline"
+                  />
+                </el-form-item>
+                <el-form-item label="姓名" prop="nickName">
+                  <el-input
+                    v-model="queryParams.nickName"
+                    placeholder="请输入姓名"
                     clearable
                     @keyup.enter.native="handleQuery"
                   />
@@ -322,9 +326,9 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userName: undefined,
-        phonenumber: undefined,
-        status: undefined,
-        deptId: undefined
+        nickName: undefined,
+        deptId: undefined,
+        orgId: undefined
       },
       // 列信息
       columns: [
@@ -460,6 +464,7 @@ export default {
     resetQuery() {
       this.dateRange = []
       this.resetForm("queryForm")
+      this.queryParams.orgId = undefined
       this.queryParams.deptId = undefined
       this.$refs.tree.setCurrentKey(null)
       this.handleQuery()
@@ -599,3 +604,11 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.treeselect-inline {
+  display: inline-block;
+  width: 200px;
+  vertical-align: middle;
+}
+</style>

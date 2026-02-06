@@ -42,3 +42,30 @@ export function delMeeting(id) {
     method: 'delete'
   })
 }
+
+// 查询会议类型列表
+export function listMeetingType(query) {
+  return request({
+    url: '/ipms/type/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询会议室列表
+export function listMeetingRoom(query) {
+  return request({
+    url: '/ipms/room/list',
+    method: 'get',
+    params: query
+  })
+}
+
+// 查询会议功能列表
+export function listMeetingFeature(query) {
+  return request({
+    url: '/ipms/feature/list',
+    method: 'get',
+    params: query
+  })
+}
