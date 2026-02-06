@@ -2,16 +2,6 @@
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
       <el-row>
-        <el-form-item label="所属范围" prop="deptId">
-          <treeselect
-            v-model="queryParams.deptId"
-            :options="enabledDeptOptions"
-            :show-count="true"
-            placeholder="请选择所属范围"
-            clearable
-            class="treeselect-inline"
-          />
-        </el-form-item>
         <el-form-item label="会议名称" prop="meetingName">
           <el-input
             v-model="queryParams.meetingName"
@@ -23,78 +13,64 @@
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">刷新</el-button>
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['ipms:meeting:add']"
+          >新建会议
+          </el-button>
         </el-form-item>
       </el-row>
     </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['ipms:meeting:add']"
-        >新增
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['ipms:meeting:edit']"
-        >修改
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['ipms:meeting:remove']"
-        >删除
-        </el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['ipms:meeting:export']"
-        >导出
-        </el-button>
-      </el-col>
-      <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
-    </el-row>
-
     <el-table v-loading="loading" :data="meetingList" @selection-change="handleSelectionChange">
-      <el-table-column label="会议名称" align="center" prop="meetingName"/>
+      <el-table-column label="会议名称" prop="meetingName" width="300"/>
       <el-table-column label="开始时间" align="center" prop="startTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.startTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="结束时间" align="center" prop="endTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d} {h}:{i}:{s}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="会议室" align="center" prop="roomId"/>
-      <el-table-column label="会议主持人" align="center" prop="hostId"/>
-      <el-table-column label="会议助理" align="center" prop="assistantId"/>
-      <el-table-column label="会议类型" align="center" prop="typeId"/>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="会议室" align="center">
         <template slot-scope="scope">
+          <span>{{ getMeetingRoomName(scope.row.roomId) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="主持人" align="center">
+        <template slot-scope="scope">
+          <span>{{ getUserNickName(scope.row.hostId) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="会议助理" align="center">
+        <template slot-scope="scope">
+          <span>{{ getUserNickName(scope.row.assistantId) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="会议类型" align="center">
+        <template slot-scope="scope">
+          <span>{{ getMeetingTypeName(scope.row.typeId) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="会议状态" align="center" prop="status">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.mt_status" :value="scope.row.status"/>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" width="150">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+          >查看
+          </el-button>
           <el-button
             size="mini"
             type="text"
@@ -146,16 +122,16 @@
             <el-form-item label="开始时间" prop="startTime">
               <el-date-picker clearable
                               v-model="form.startTime"
-                              type="date"
-                              value-format="yyyy-MM-dd"
+                              type="datetime"
+                              value-format="yyyy-MM-dd HH:mm:ss"
                               placeholder="请选择开始时间">
               </el-date-picker>
             </el-form-item>
             <el-form-item label="结束时间" prop="endTime">
               <el-date-picker clearable
                               v-model="form.endTime"
-                              type="date"
-                              value-format="yyyy-MM-dd"
+                              type="datetime"
+                              value-format="yyyy-MM-dd HH:mm:ss"
                               placeholder="请选择结束时间">
               </el-date-picker>
             </el-form-item>
@@ -170,10 +146,24 @@
               </el-select>
             </el-form-item>
             <el-form-item label="会议主持人" prop="hostId">
-              <el-input v-model="form.hostId" placeholder="请输入会议主持人"/>
+              <el-select v-model="form.hostId" placeholder="请选择会议主持人" clearable filterable>
+                <el-option
+                  v-for="item in userOptions"
+                  :key="item.userId"
+                  :label="item.nickName"
+                  :value="item.userId"
+                />
+              </el-select>
             </el-form-item>
             <el-form-item label="会议助理" prop="assistantId">
-              <el-input v-model="form.assistantId" placeholder="请输入会议助理"/>
+              <el-select v-model="form.assistantId" placeholder="请选择会议助理" clearable filterable>
+                <el-option
+                  v-for="item in userOptions"
+                  :key="item.userId"
+                  :label="item.nickName"
+                  :value="item.userId"
+                />
+              </el-select>
             </el-form-item>
             <el-form-item label="会议类型" prop="typeId">
               <el-select v-model="form.typeId" placeholder="请选择会议类型" clearable>
@@ -190,7 +180,8 @@
                 v-model="featureAll"
                 :indeterminate="featureIndeterminate"
                 @change="handleFeatureAllChange"
-              >全选</el-checkbox>
+              >全选
+              </el-checkbox>
               <el-checkbox-group v-model="form.featureSelect" @change="handleFeatureSelectChange">
                 <el-checkbox
                   v-for="item in meetingFeatureOptions"
@@ -231,12 +222,13 @@ import {
   listMeetingType,
   updateMeeting
 } from "@/api/ipms/meeting"
-import {deptTreeSelect} from "@/api/system/user"
+import {deptTreeSelect, listUser} from "@/api/system/user"
 import Treeselect from "@riophae/vue-treeselect"
 import "@riophae/vue-treeselect/dist/vue-treeselect.css"
 
 export default {
   name: "Meeting",
+  dicts: ['mt_status'],
   components: {Treeselect},
   data() {
     return {
@@ -272,6 +264,12 @@ export default {
       featureAll: false,
       // 功能选择半选
       featureIndeterminate: false,
+      // 人员选项（表单下拉）
+      userOptions: [],
+      // 人员选项（列表显示映射）
+      userOptionsAll: [],
+      // 人员搜索
+      userSearchName: "",
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -299,7 +297,7 @@ export default {
           {required: true, message: "选择会议室不能为空", trigger: "change"}
         ],
         hostId: [
-          {required: true, message: "会议主持人不能为空", trigger: "blur"}
+          {required: true, message: "会议主持人不能为空", trigger: "change"}
         ],
         typeId: [
           {required: true, message: "会议类型不能为空", trigger: "change"}
@@ -313,6 +311,7 @@ export default {
     this.getMeetingTypes()
     this.getMeetingRooms()
     this.getMeetingFeatures()
+    this.getUsers()
   },
   methods: {
     /** 查询会议列表 */
@@ -349,13 +348,13 @@ export default {
     },
     /** 查询会议类型 */
     getMeetingTypes() {
-      listMeetingType({pageNum: 1, pageSize: 10}).then(response => {
+      listMeetingType({pageNum: 1, pageSize: 1000}).then(response => {
         this.meetingTypeOptions = response.rows || []
       })
     },
     /** 查询会议室 */
     getMeetingRooms() {
-      listMeetingRoom({pageNum: 1, pageSize: 10}).then(response => {
+      listMeetingRoom({pageNum: 1, pageSize: 1000}).then(response => {
         this.meetingRoomOptions = response.rows || []
       })
     },
@@ -365,6 +364,29 @@ export default {
         this.meetingFeatureOptions = response.rows || []
         this.refreshFeatureSelectState()
       })
+    },
+    /** 查询人员列表 */
+    getUsers(isSearch = false) {
+      const params = {
+        pageNum: 1,
+        pageSize: 1000
+      }
+      if (isSearch && this.userSearchName) {
+        params.nickName = this.userSearchName
+      }
+      listUser(params).then(response => {
+        const rows = response.rows || []
+        if (isSearch) {
+          this.userOptions = rows
+        } else {
+          this.userOptions = rows
+          this.userOptionsAll = rows
+        }
+      })
+    },
+    /** 人员搜索 */
+    handleUserSearch() {
+      this.getUsers(true)
     },
     handleFeatureAllChange(val) {
       if (val) {
@@ -386,6 +408,26 @@ export default {
       const checkedCount = selected.length
       this.featureAll = total > 0 && checkedCount === total
       this.featureIndeterminate = checkedCount > 0 && checkedCount < total
+    },
+    getOptionName(options, id, nameField) {
+      if (id === null || id === undefined || id === "") {
+        return ""
+      }
+      const item = options.find(opt => String(opt.id) === String(id))
+      return item ? item[nameField] : id
+    },
+    getMeetingRoomName(id) {
+      return this.getOptionName(this.meetingRoomOptions, id, "name")
+    },
+    getMeetingTypeName(id) {
+      return this.getOptionName(this.meetingTypeOptions, id, "name")
+    },
+    getUserNickName(id) {
+      if (id === null || id === undefined || id === "") {
+        return ""
+      }
+      const item = this.userOptionsAll.find(opt => String(opt.userId) === String(id))
+      return item ? item.nickName : id
     },
     // 取消按钮
     cancel() {
@@ -414,6 +456,7 @@ export default {
       }
       this.featureAll = false
       this.featureIndeterminate = false
+      this.userSearchName = ""
       this.resetForm("form")
     },
     /** 搜索按钮操作 */
@@ -517,5 +560,12 @@ export default {
   display: inline-block;
   width: 200px;
   vertical-align: middle;
+}
+
+.input-inline {
+  display: inline-block;
+  width: 200px;
+  vertical-align: middle;
+  margin-right: 8px;
 }
 </style>

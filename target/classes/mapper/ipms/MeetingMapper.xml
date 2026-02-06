@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.ipms.mapper.MeetingMapper">
-    
+
     <resultMap type="Meeting" id="MeetingResult">
         <result property="id"    column="id"    />
         <result property="scope"    column="scope"    />
@@ -20,19 +20,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="seatChart"    column="seat_chart"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
     </resultMap>
 
     <sql id="selectMeetingVo">
-        select id, scope, meeting_name, subtitle, start_time, end_time, room_id, host_id, assistant_id, type_id, feature_select, logo, seat_chart, create_time, update_time from meeting
+        select id, scope, meeting_name, subtitle, start_time, end_time, room_id, host_id, assistant_id, type_id, feature_select, logo, seat_chart, create_time, update_time,status from meeting
     </sql>
 
     <select id="selectMeetingList" parameterType="Meeting" resultMap="MeetingResult">
         <include refid="selectMeetingVo"/>
-        <where>  
+        <where>
             <if test="meetingName != null  and meetingName != ''"> and meeting_name like concat('%', #{meetingName}, '%')</if>
         </where>
     </select>
-    
+
     <select id="selectMeetingById" parameterType="Long" resultMap="MeetingResult">
         <include refid="selectMeetingVo"/>
         where id = #{id}
@@ -55,7 +56,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="seatChart != null">seat_chart,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
-         </trim>
+            <if test="status != null">status,</if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="scope != null and scope != ''">#{scope},</if>
             <if test="meetingName != null and meetingName != ''">#{meetingName},</if>
@@ -71,7 +73,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="seatChart != null">#{seatChart},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateTime != null">#{updateTime},</if>
-         </trim>
+            <if test="status != null">#{status},</if>
+        </trim>
     </insert>
 
     <update id="updateMeeting" parameterType="Meeting">
@@ -91,6 +94,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="seatChart != null">seat_chart = #{seatChart},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
         </trim>
         where id = #{id}
     </update>
@@ -100,7 +104,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteMeetingByIds" parameterType="String">
-        delete from meeting where id in 
+        delete from meeting where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

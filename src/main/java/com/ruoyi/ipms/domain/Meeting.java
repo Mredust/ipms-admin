@@ -19,7 +19,7 @@ public class Meeting extends BaseEntity
     /** ID */
     private Long id;
 
-    /** 所属范围 */
+    /** 所属范�?*/
     @Excel(name = "所属范围")
     private String scope;
 
@@ -27,26 +27,26 @@ public class Meeting extends BaseEntity
     @Excel(name = "会议名称")
     private String meetingName;
 
-    /** 副标题 */
-    @Excel(name = "副标题")
+    /** 副标�?*/
+    @Excel(name = "副标")
     private String subtitle;
 
-    /** 开始时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "开始时间", width = 30, dateFormat = "yyyy-MM-dd")
+    /** 开始时�?*/
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "开始时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date startTime;
 
     /** 结束时间 */
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
-    /** 选择会议室 */
-    @Excel(name = "选择会议室")
+    /** 选择会议�?*/
+    @Excel(name = "选择会议")
     private Long roomId;
 
-    /** 会议主持人 */
-    @Excel(name = "会议主持人")
+    /** 会议主持�?*/
+    @Excel(name = "会议主持")
     private Long hostId;
 
     /** 会议助理 */
@@ -65,11 +65,21 @@ public class Meeting extends BaseEntity
     @Excel(name = "会议logo")
     private String logo;
 
-    /** 座位图 */
-    @Excel(name = "座位图")
+    /** 座位�?*/
+    @Excel(name = "座位")
     private String seatChart;
 
-    public void setId(Long id) 
+    private Long status;
+
+    public Long getStatus() {
+        return status;
+    }
+
+    public void setStatus(Long status) {
+        this.status = status;
+    }
+
+    public void setId(Long id)
     {
         this.id = id;
     }
@@ -220,3 +230,4 @@ public class Meeting extends BaseEntity
             .toString();
     }
 }
+
