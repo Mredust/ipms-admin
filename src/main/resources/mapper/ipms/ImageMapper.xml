@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ipms.mapper.ImageMapper">
+    
+    <resultMap type="Image" id="ImageResult">
+        <result property="id"    column="id"    />
+        <result property="url"    column="url"    />
+        <result property="type"    column="type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="isSystem"    column="is_system"    />
+    </resultMap>
+
+    <sql id="selectImageVo">
+        select id, url, type, create_time, is_system from image
+    </sql>
+
+    <select id="selectImageList" parameterType="Image" resultMap="ImageResult">
+        <include refid="selectImageVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectImageById" parameterType="Long" resultMap="ImageResult">
+        <include refid="selectImageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertImage" parameterType="Image" useGeneratedKeys="true" keyProperty="id">
+        insert into image
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="url != null and url != ''">url,</if>
+            <if test="type != null">type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="isSystem != null">is_system,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="url != null and url != ''">#{url},</if>
+            <if test="type != null">#{type},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="isSystem != null">#{isSystem},</if>
+         </trim>
+    </insert>
+
+    <update id="updateImage" parameterType="Image">
+        update image
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="url != null and url != ''">url = #{url},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="isSystem != null">is_system = #{isSystem},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteImageById" parameterType="Long">
+        delete from image where id = #{id}
+    </delete>
+
+    <delete id="deleteImageByIds" parameterType="String">
+        delete from image where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

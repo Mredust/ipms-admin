@@ -3,45 +3,55 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="会议信息" name="info">
         <div class="info-actions">
-          <div class="action-left">
-            <el-button type="primary" size="mini" @click="openEditDialog">修改会议信息</el-button>
-            <el-button size="mini" @click="skinDialogVisible = true">更换皮肤</el-button>
-            <el-button size="mini" @click="sloganDialogVisible = true">会议标语</el-button>
-            <el-button size="mini" @click="backscreenDialogVisible = true">背屏设置</el-button>
-            <el-button
-              type="warning"
-              size="mini"
-              v-if="meetingStatus === statusMap.unpublished"
-              @click="publishMeeting"
-            >发布会议</el-button>
-            <el-button
-              type="warning"
-              size="mini"
-              v-else-if="meetingStatus === statusMap.ended"
-              @click="cancelPublishMeeting"
-            >取消发布会议</el-button>
+          <div class="action-row">
+            <div class="action-left">
+              <el-button type="primary" size="mini" @click="openEditDialog">修改会议信息</el-button>
+              <el-button size="mini" @click="skinDialogVisible = true">更换皮肤</el-button>
+              <el-button size="mini" @click="sloganDialogVisible = true">会议标语</el-button>
+              <el-button size="mini" @click="backscreenDialogVisible = true">背屏设置</el-button>
+            </div>
           </div>
-          <div class="action-right">
-            <el-button
-              type="success"
-              size="mini"
-              v-if="meetingStatus === statusMap.ended"
-              @click="openMeeting"
-            >开启会议</el-button>
-            <el-button
-              type="danger"
-              size="mini"
-              v-if="meetingStatus === statusMap.inProgress"
-              @click="closeMeeting"
-            >关闭会议</el-button>
-            <el-button
-              type="info"
-              size="mini"
-              v-if="meetingStatus === statusMap.inProgress"
-              @click="packOpinions"
-            >意见打包</el-button>
-            <el-button size="mini" @click="downloadAgendaFile">下载议程文件</el-button>
-          </div>
+          <el-row class="action-row" :gutter="12">
+            <el-col :span="12">
+              <div class="action-left">
+                <el-button
+                  type="warning"
+                  size="mini"
+                  v-if="meetingStatus === statusMap.unpublished"
+                  @click="publishMeeting"
+                >发布会议</el-button>
+                <el-button
+                  type="warning"
+                  size="mini"
+                  v-else-if="meetingStatus === statusMap.ended"
+                  @click="cancelPublishMeeting"
+                >取消发布会议</el-button>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="action-right">
+                <el-button
+                  type="success"
+                  size="mini"
+                  v-if="meetingStatus === statusMap.ended"
+                  @click="openMeeting"
+                >开启会议</el-button>
+                <el-button
+                  type="danger"
+                  size="mini"
+                  v-if="meetingStatus === statusMap.inProgress"
+                  @click="closeMeeting"
+                >关闭会议</el-button>
+                <el-button
+                  type="info"
+                  size="mini"
+                  v-if="meetingStatus === statusMap.inProgress"
+                  @click="packOpinions"
+                >一键打包</el-button>
+                <el-button size="mini" @click="downloadAgendaFile">下载议程文件</el-button>
+              </div>
+            </el-col>
+          </el-row>
         </div>
 
         <div class="info-center">
@@ -239,6 +249,37 @@
         </div>
       </el-tab-pane>
 
+      <el-tab-pane label="会议投票" name="vote">
+        <div class="vote-toolbar">
+          <el-button size="mini" type="primary" @click="exportVoteResults">导出投票结果</el-button>
+        </div>
+        <el-table v-loading="voteLoading" :data="voteList" border size="small">
+          <el-table-column label="序号" type="index" width="60" align="center" />
+          <el-table-column label="投票标题" prop="voteTitle" min-width="180" />
+          <el-table-column label="匿名" align="center" width="80">
+            <template slot-scope="scope">
+              {{ formatAnonymous(scope.row.anonymousSwitch) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120" align="center">
+            <template slot-scope="scope">
+              <el-button size="mini" type="text" @click="openVoteDetail(scope.row)">详情</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-dialog :visible.sync="voteDetailVisible" :title="voteDetailTitle" width="820px" append-to-body>
+          <div class="vote-detail-title">{{ voteDetailTitle }}</div>
+          <el-table :data="voteDetailRows" border size="small">
+            <el-table-column label="序号" type="index" width="60" align="center" />
+            <el-table-column label="选项内容" prop="optionName" min-width="160" />
+            <el-table-column label="已选" prop="count" width="80" align="center" />
+            <el-table-column label="已投票人员姓名" prop="voters" min-width="240" />
+            <el-table-column label="百分比" prop="percent" width="100" align="center" />
+          </el-table>
+        </el-dialog>
+      </el-tab-pane>
+
       <el-tab-pane label="会议纪要" name="minutes">
         <el-card shadow="never">
           <el-upload
@@ -360,6 +401,14 @@
     <!-- 更换皮肤弹窗 -->
     <el-dialog :title="'更换皮肤'" :visible.sync="skinDialogVisible" width="900px" append-to-body>
       <div class="skin-section">
+        <div class="skin-title">PAD 背景</div>
+        <div class="skin-current">
+          <div class="panel-title">使用中的背景</div>
+          <div class="bg-preview">
+            <img v-if="skin.padCurrent" :src="resolveImageUrl(skin.padCurrent)" alt="当前背景" />
+            <div v-else class="bg-empty">暂无背景</div>
+          </div>
+        </div>
         <el-upload
           :action="uploadUrl"
           :headers="uploadHeaders"
@@ -375,14 +424,25 @@
             :key="item"
             class="skin-item"
             :class="{ active: skin.padCurrent === item }"
-            @click="skin.padCurrent = item"
+            @click="setSkinBackground(item, 'pad')"
           >
             <img :src="resolveImageUrl(item)" alt="pad-bg" />
+            <div class="hover-mask">
+              <el-button size="mini" type="primary" @click.stop="setSkinBackground(item, 'pad')">设为背景图</el-button>
+            </div>
           </div>
         </div>
       </div>
       <el-divider></el-divider>
       <div class="skin-section">
+        <div class="skin-title">WEB 背景</div>
+        <div class="skin-current">
+          <div class="panel-title">使用中的背景</div>
+          <div class="bg-preview">
+            <img v-if="skin.webCurrent" :src="resolveImageUrl(skin.webCurrent)" alt="当前背景" />
+            <div v-else class="bg-empty">暂无背景</div>
+          </div>
+        </div>
         <el-upload
           :action="uploadUrl"
           :headers="uploadHeaders"
@@ -398,9 +458,12 @@
             :key="item"
             class="skin-item"
             :class="{ active: skin.webCurrent === item }"
-            @click="skin.webCurrent = item"
+            @click="setSkinBackground(item, 'web')"
           >
             <img :src="resolveImageUrl(item)" alt="web-bg" />
+            <div class="hover-mask">
+              <el-button size="mini" type="primary" @click.stop="setSkinBackground(item, 'web')">设为背景图</el-button>
+            </div>
           </div>
         </div>
       </div>
@@ -429,9 +492,6 @@
           <el-form :model="slogan" label-width="70px">
             <el-form-item label="欢迎语">
               <el-input v-model="slogan.welcomeText" />
-            </el-form-item>
-            <el-form-item label="使用中">
-              <el-input v-model="slogan.usingText" />
             </el-form-item>
           </el-form>
         </div>
@@ -498,9 +558,12 @@
               :key="item"
               class="bg-item"
               :class="{ active: slogan.background === item }"
-              @click="slogan.background = item"
+              @click="setSloganBackground(item)"
             >
               <img :src="resolveImageUrl(item)" alt="背景图" />
+              <div class="hover-mask">
+                <el-button size="mini" type="primary" @click.stop="setSloganBackground(item)">设为背景图</el-button>
+              </div>
             </div>
           </div>
         </div>
@@ -585,9 +648,12 @@
               :key="item"
               class="bg-item"
               :class="{ active: backscreen.background === item }"
-              @click="backscreen.background = item"
+              @click="setBackscreenBackground(item)"
             >
               <img :src="resolveImageUrl(item)" alt="背景图" />
+              <div class="hover-mask">
+                <el-button size="mini" type="primary" @click.stop="setBackscreenBackground(item)">设为背景图</el-button>
+              </div>
             </div>
           </div>
         </div>
@@ -598,10 +664,13 @@
 
 <script>
 import { getMeeting, updateMeeting, listMeetingRoom, listMeetingType, listMeetingFeature } from "@/api/ipms/meeting"
+import { listImage, addImage } from "@/api/ipms/image"
+import { listVote } from "@/api/ipms/vote"
 import { listUser, deptTreeSelect } from "@/api/system/user"
 import { getToken } from "@/utils/auth"
 import Treeselect from "@riophae/vue-treeselect"
 import "@riophae/vue-treeselect/dist/vue-treeselect.css"
+import * as XLSX from "xlsx"
 
 const PAD_BG_LIST = [
   "/meeting-bg/pad/1.jpg",
@@ -667,6 +736,7 @@ export default {
       meetingFeatureOptions: [],
       featureAll: false,
       featureIndeterminate: false,
+      imageList: [],
       userAll: [],
       userOptions: [],
       userSearchName: "",
@@ -701,7 +771,7 @@ export default {
       fontSizeOptions: FONT_SIZE_OPTIONS.slice(),
       slogan: {
         welcomeText: "欢迎您莅临此次会议",
-        usingText: "使用中",
+        usingText: "",
         mainFont: "方正小标宋简体",
         mainColor: "#ffffff",
         mainSize: "8em",
@@ -719,6 +789,12 @@ export default {
         subSize: "2em",
         background: ""
       },
+      voteList: [],
+      voteLoading: false,
+      voteDetailVisible: false,
+      voteDetailTitle: "",
+      voteDetailRows: [],
+      voteDetailRecords: [],
       agendaExtraColumns: [],
       agendaRows: [],
       agendaDirty: false,
@@ -772,16 +848,27 @@ export default {
       return this.selectedMembers.map(user => user.nickName).join("\uFF0C")
     },
     padImageList() {
-      return this.splitImages(this.skin.padImages)
+      const list = this.imageList
+        .filter(item => String(item.type).toLowerCase() === "pad")
+        .map(item => item.url)
+        .filter(Boolean)
+      return list.length ? list : this.splitImages(this.skin.padImages)
     },
     webImageList() {
-      return this.splitImages(this.skin.webImages)
+      const list = this.imageList
+        .filter(item => String(item.type).toLowerCase() === "web")
+        .map(item => item.url)
+        .filter(Boolean)
+      return list.length ? list : this.splitImages(this.skin.webImages)
     },
     backgroundOptions() {
-      const list = []
+      const list = this.imageList.map(item => item.url).filter(Boolean)
+      if (list.length) {
+        return Array.from(new Set(list))
+      }
       const pad = this.splitImages(this.skin.padImages)
       const web = this.splitImages(this.skin.webImages)
-      return list.concat(pad, web)
+      return Array.from(new Set(pad.concat(web)))
     },
     isMinutesPdf() {
       return this.minutesFileUrl && this.minutesFileUrl.toLowerCase().includes(".pdf")
@@ -797,9 +884,11 @@ export default {
     this.loadOptions()
     this.loadDeptTree()
     this.loadMeetingFeatures()
+    this.loadImages()
     this.loadUsers()
     this.loadMembers()
     this.loadAgenda()
+    this.loadVotes()
     this.loadSloganSettings()
     this.loadBackscreenSettings()
     this.ensureBackgroundDefaults()
@@ -839,6 +928,12 @@ export default {
       listMeetingFeature({ pageNum: 1, pageSize: 20 }).then(res => {
         this.meetingFeatureOptions = res.rows || []
         this.refreshFeatureSelectState()
+      })
+    },
+    loadImages() {
+      listImage({ pageNum: 1, pageSize: 1000 }).then(res => {
+        this.imageList = res.rows || []
+        this.ensureBackgroundDefaults()
       })
     },
     loadUsers() {
@@ -1015,7 +1110,7 @@ export default {
       this.updateMeetingStatus(this.statusMap.ended)
     },
     packOpinions() {
-      this.$modal.msgSuccess("意见打包处理中")
+      this.$modal.msgSuccess("一键打包处理中")
     },
     updateMeetingStatus(status) {
       updateMeeting({ id: this.meeting.id, status }).then(() => {
@@ -1033,12 +1128,11 @@ export default {
       }
       const path = res.url || res.fileName
       if (!path) return
-      const key = type === "pad" ? "padImages" : "webImages"
-      const list = Array.isArray(this.skin[key]) ? this.skin[key] : this.splitImages(this.skin[key])
-      if (!list.includes(path)) {
-        list.push(path)
-      }
-      this.$set(this.skin, key, list)
+      this.persistImage(path, type)
+      this.appendBackground(path, type)
+      this.setSkinBackground(path, type)
+    },
+    setSkinBackground(path, type) {
       if (type === "pad") {
         this.skin.padCurrent = path
       } else {
@@ -1051,8 +1145,9 @@ export default {
         this.$modal.msgError(res.msg || "上传失败")
         return
       }
-      this.appendBackground(path)
-      this.slogan.background = path
+      this.persistImage(path, "other")
+      this.appendBackground(path, "other")
+      this.setSloganBackground(path)
     },
     handleBackscreenBgUploadSuccess(res) {
       const path = res.url || res.fileName
@@ -1060,15 +1155,29 @@ export default {
         this.$modal.msgError(res.msg || "上传失败")
         return
       }
-      this.appendBackground(path)
+      this.persistImage(path, "other")
+      this.appendBackground(path, "other")
+      this.setBackscreenBackground(path)
+    },
+    setSloganBackground(path) {
+      this.slogan.background = path
+    },
+    setBackscreenBackground(path) {
       this.backscreen.background = path
     },
-    appendBackground(path) {
-      const list = Array.isArray(this.skin.webImages) ? this.skin.webImages : this.splitImages(this.skin.webImages)
+    appendBackground(path, type) {
+      const list = this.imageList.map(item => item.url)
       if (!list.includes(path)) {
-        list.push(path)
+        this.imageList = this.imageList.concat({ url: path, type })
       }
-      this.$set(this.skin, "webImages", list)
+    },
+    persistImage(path, type) {
+      if (!path) return
+      const exists = this.imageList.some(item => item.url === path)
+      if (exists) return
+      addImage({ url: path, type, isSystem: 0 }).then(() => {
+        this.loadImages()
+      }).catch(() => {})
     },
     resolveImageUrl(path) {
       if (!path) return ""
@@ -1077,7 +1186,8 @@ export default {
       return this.fileFullUrl(path)
     },
     saveSlogan() {
-      localStorage.setItem(this.sloganStorageKey(), JSON.stringify(this.slogan))
+      const payload = { ...this.slogan, usingText: "" }
+      localStorage.setItem(this.sloganStorageKey(), JSON.stringify(payload))
       this.$modal.msgSuccess("保存成功")
     },
     saveBackscreen() {
@@ -1089,7 +1199,10 @@ export default {
       if (raw) {
         try {
           const data = JSON.parse(raw)
-          this.slogan = { ...this.slogan, ...data }
+          if (data && Object.prototype.hasOwnProperty.call(data, "usingText")) {
+            delete data.usingText
+          }
+          this.slogan = { ...this.slogan, ...data, usingText: "" }
         } catch (e) {
           // ignore parse error
         }
@@ -1113,6 +1226,12 @@ export default {
       return `ipms_meeting_backscreen_${this.meetingId}`
     },
     ensureBackgroundDefaults() {
+      if (!this.skin.padCurrent && this.padImageList.length) {
+        this.skin.padCurrent = this.padImageList[0]
+      }
+      if (!this.skin.webCurrent && this.webImageList.length) {
+        this.skin.webCurrent = this.webImageList[0]
+      }
       if (!this.slogan.background && this.backgroundOptions.length) {
         this.slogan.background = this.backgroundOptions[0]
       }
@@ -1253,6 +1372,204 @@ export default {
     agendaMembersStorageKey(row) {
       return `ipms_agenda_members_${this.meetingId}_${row.key}`
     },
+    loadVotes() {
+      this.voteLoading = true
+      listVote({ pageNum: 1, pageSize: 1000, meetingId: this.meetingId }).then(res => {
+        const rows = res.rows || []
+        if (rows.length && Object.prototype.hasOwnProperty.call(rows[0], "meetingId")) {
+          this.voteList = rows.filter(row => String(row.meetingId) === String(this.meetingId))
+        } else {
+          this.voteList = rows
+        }
+        this.voteLoading = false
+      }).catch(() => {
+        this.voteLoading = false
+      })
+    },
+    formatAnonymous(value) {
+      return Number(value) === 1 ? "是" : "否"
+    },
+    openVoteDetail(vote) {
+      if (Number(vote.anonymousSwitch) === 1) {
+        this.$alert("该投票项为匿名投票，不能查看投票详情", "提示", {
+          confirmButtonText: "确定"
+        })
+        return
+      }
+      const detail = this.normalizeVoteResults(vote)
+      const rows = detail.options.map((option, index) => {
+        const count = detail.counts[option] || 0
+        const voters = detail.votersMap[option] || []
+        const percent = detail.total > 0 ? `${(count / detail.total * 100).toFixed(2)}%` : "0.00%"
+        return {
+          index: index + 1,
+          optionName: option,
+          count,
+          voters: voters.join("\uFF0C"),
+          percent
+        }
+      })
+      this.voteDetailTitle = vote.voteTitle || "投票详情"
+      this.voteDetailRows = rows
+      this.voteDetailRecords = detail.records
+      this.voteDetailVisible = true
+    },
+    exportVoteResults() {
+      if (!this.voteList.length) {
+        this.$modal.msgWarning("暂无投票数据")
+        return
+      }
+      const meetingName = this.meeting.meetingName || "会议"
+      const wb = XLSX.utils.book_new()
+      const summaryRows = []
+      summaryRows.push([`${meetingName} - 投票表`])
+      summaryRows.push(["序号", "投票标题", "选项结果"])
+      this.voteList.forEach((vote, idx) => {
+        const detail = this.normalizeVoteResults(vote)
+        const optionText = detail.options.map(option => {
+          const count = detail.counts[option] || 0
+          const percent = detail.total > 0 ? `${(count / detail.total * 100).toFixed(2)}%` : "0.00%"
+          return `${option}${count}票(${percent})`
+        }).join("\uFF0C")
+        summaryRows.push([idx + 1, vote.voteTitle || `投票${idx + 1}`, optionText])
+      })
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows)
+      summarySheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 2 } }]
+      XLSX.utils.book_append_sheet(wb, summarySheet, "投票表")
+
+      this.voteList.forEach((vote, idx) => {
+        const detail = this.normalizeVoteResults(vote)
+        const rows = []
+        rows.push([`${meetingName} - ${vote.voteTitle || "投票"}`])
+        rows.push(["序号", "投票人", "投票结果", "投票时间", "签名"])
+        detail.records.forEach((record, recordIndex) => {
+          rows.push([
+            recordIndex + 1,
+            this.getRecordUserName(record),
+            this.getRecordOptionName(record),
+            this.getRecordTime(record),
+            this.getRecordSign(record)
+          ])
+        })
+        const sheet = XLSX.utils.aoa_to_sheet(rows)
+        sheet["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }]
+        XLSX.utils.book_append_sheet(wb, sheet, `sheet${idx + 1}`)
+      })
+      XLSX.writeFile(wb, `vote_${new Date().getTime()}.xlsx`)
+    },
+    normalizeVoteResults(vote) {
+      const options = this.getVoteOptions(vote)
+      const counts = {}
+      const votersMap = {}
+      const resultList = this.getOptionResults(vote)
+      resultList.forEach(item => {
+        const name = item.name
+        if (!name) return
+        counts[name] = item.count || 0
+        if (item.users && item.users.length) {
+          votersMap[name] = item.users.slice()
+        }
+      })
+      const records = this.getVoteRecords(vote)
+      if (records.length) {
+        Object.keys(counts).forEach(key => delete counts[key])
+        Object.keys(votersMap).forEach(key => delete votersMap[key])
+      }
+      records.forEach(record => {
+        const name = this.getRecordOptionName(record)
+        if (!name) return
+        counts[name] = (counts[name] || 0) + 1
+        const voter = this.getRecordUserName(record)
+        if (voter) {
+          if (!votersMap[name]) votersMap[name] = []
+          if (!votersMap[name].includes(voter)) {
+            votersMap[name].push(voter)
+          }
+        }
+      })
+      Object.keys(counts).forEach(name => {
+        if (!options.includes(name)) {
+          options.push(name)
+        }
+      })
+      options.forEach(option => {
+        if (counts[option] === undefined) counts[option] = 0
+        if (!votersMap[option]) votersMap[option] = []
+      })
+      const total = records.length || Object.values(counts).reduce((sum, val) => sum + val, 0)
+      return { options, counts, total, votersMap, records }
+    },
+    getVoteOptions(vote) {
+      const candidates = [
+        vote.optionList,
+        vote.options,
+        vote.optionNames,
+        vote.customOptions
+      ]
+      for (const item of candidates) {
+        if (Array.isArray(item)) {
+          return item.map(opt => opt.name || opt.label || opt.optionName || opt.value || opt)
+        }
+        if (typeof item === "string" && item.trim()) {
+          return item.split(/[,，;；、]/).map(opt => opt.trim()).filter(Boolean)
+        }
+      }
+      const mode = String(vote.voteMode || "")
+      if (mode === "2") {
+        return ["赞成", "反对"]
+      }
+      return ["赞成", "反对", "弃权"]
+    },
+    getOptionResults(vote) {
+      const candidates = [
+        vote.optionResults,
+        vote.resultList,
+        vote.voteResultList,
+        vote.optionResultList,
+        vote.results
+      ]
+      const list = candidates.find(item => Array.isArray(item)) || []
+      return list.map(item => {
+        const name = item.optionName || item.name || item.option || item.label
+        let users = item.users || item.userList || item.voters || []
+        const rawCount = item.count ?? item.total ?? item.voteCount ?? item.num
+        if (typeof users === "string") {
+          users = users.split(/[,，;；、]/).map(val => val.trim()).filter(Boolean)
+        }
+        if (Array.isArray(users)) {
+          users = users.map(user => {
+            if (typeof user === "string") return user
+            if (!user) return ""
+            return user.nickName || user.userName || user.name || ""
+          }).filter(Boolean)
+        }
+        const count = rawCount !== null && rawCount !== undefined ? Number(rawCount) : (Array.isArray(users) ? users.length : 0)
+        return { name, count, users }
+      }).filter(item => item.name)
+    },
+    getVoteRecords(vote) {
+      const candidates = [
+        vote.records,
+        vote.recordList,
+        vote.voteRecords,
+        vote.detailList,
+        vote.record
+      ]
+      const list = candidates.find(item => Array.isArray(item))
+      return list || []
+    },
+    getRecordOptionName(record) {
+      return record.optionName || record.option || record.voteOption || record.result || record.voteResult || record.choice || ""
+    },
+    getRecordUserName(record) {
+      return record.nickName || record.userName || record.user || record.voterName || record.name || ""
+    },
+    getRecordTime(record) {
+      return record.voteTime || record.createTime || record.time || ""
+    },
+    getRecordSign(record) {
+      return record.sign || record.signature || ""
+    },
     handleMinutesUploadSuccess(res, file) {
       if (res.code === 200) {
         this.minutesFileUrl = res.url || this.fileFullUrl(res.fileName)
@@ -1280,11 +1597,13 @@ export default {
 
 .info-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 8px;
   margin-bottom: 16px;
+}
+
+.action-row {
+  width: 100%;
 }
 
 .action-left {
@@ -1295,6 +1614,8 @@ export default {
 
 .action-right {
   display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
@@ -1402,6 +1723,15 @@ export default {
   margin-bottom: 16px;
 }
 
+.skin-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.skin-current {
+  margin-bottom: 12px;
+}
+
 .skin-upload-btn {
   background: #7cb63d;
   border-color: #7cb63d;
@@ -1425,6 +1755,7 @@ export default {
 .skin-item {
   width: 120px;
   height: 70px;
+  position: relative;
   border: 1px solid #e4e7ed;
   border-radius: 4px;
   overflow: hidden;
@@ -1436,6 +1767,23 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.hover-mask {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1;
+}
+
+.skin-item:hover .hover-mask,
+.bg-item:hover .hover-mask {
+  opacity: 1;
 }
 
 .skin-item.active {
@@ -1510,10 +1858,12 @@ export default {
 .bg-item {
   width: 120px;
   height: 70px;
+  position: relative;
   border: 1px solid #e4e7ed;
   border-radius: 4px;
   overflow: hidden;
   cursor: pointer;
+  position: relative;
 }
 
 .bg-item img {
@@ -1525,6 +1875,17 @@ export default {
 .bg-item.active {
   border-color: #7cb63d;
   box-shadow: 0 0 0 2px rgba(124, 182, 61, 0.25);
+}
+
+.vote-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.vote-detail-title {
+  font-weight: 600;
+  margin-bottom: 10px;
 }
 
 @media (max-width: 992px) {

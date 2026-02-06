@@ -8,7 +8,33 @@
 
     <el-tabs v-model="memberTab">
       <el-tab-pane label="议程人员" name="selected">
-        <el-table :data="selectedMembers" border size="small">
+        <div class="member-search">
+          <el-input
+            v-model="selectedSearchName"
+            size="small"
+            placeholder="按姓名搜索"
+            class="member-search-input"
+            clearable
+            @keyup.enter.native="searchSelectedMembers"
+          />
+          <el-button size="small" type="primary" @click="searchSelectedMembers">搜索</el-button>
+          <el-button size="small" @click="resetSelectedSearch">重置</el-button>
+          <el-button
+            size="small"
+            type="danger"
+            :disabled="selectedSelection.length === 0"
+            @click="removeSelectedMembers"
+          >移除已选</el-button>
+        </div>
+        <el-table
+          ref="selectedTable"
+          :data="filteredSelectedMembers"
+          border
+          size="small"
+          row-key="userId"
+          @selection-change="handleSelectedSelectionChange"
+        >
+          <el-table-column type="selection" width="55" />
           <el-table-column label="姓名" prop="nickName" />
           <el-table-column label="登录名" prop="userName" />
           <el-table-column label="部门" prop="dept.deptName" />
@@ -31,8 +57,22 @@
           />
           <el-button size="small" type="primary" @click="searchUsers">搜索</el-button>
           <el-button size="small" @click="resetUserSearch">重置</el-button>
+          <el-button
+            size="small"
+            type="primary"
+            :disabled="availableSelection.length === 0"
+            @click="addSelectedMembers"
+          >添加已选</el-button>
         </div>
-        <el-table :data="availableUsers" border size="small">
+        <el-table
+          ref="availableTable"
+          :data="filteredAvailableUsers"
+          border
+          size="small"
+          row-key="userId"
+          @selection-change="handleAvailableSelectionChange"
+        >
+          <el-table-column type="selection" width="55" />
           <el-table-column label="姓名" prop="nickName" />
           <el-table-column label="登录名" prop="userName" />
           <el-table-column label="部门" prop="dept.deptName" />
@@ -61,16 +101,31 @@ export default {
       userAll: [],
       userOptions: [],
       userSearchName: "",
-      memberIds: []
+      selectedSearchName: "",
+      memberIds: [],
+      selectedSelection: [],
+      availableSelection: []
     }
   },
   computed: {
     selectedMembers() {
       return this.userAll.filter(user => this.memberIds.includes(user.userId))
     },
+    filteredSelectedMembers() {
+      if (!this.selectedSearchName) {
+        return this.selectedMembers
+      }
+      return this.selectedMembers.filter(user => String(user.nickName || "").includes(this.selectedSearchName))
+    },
     availableUsers() {
       const source = this.userOptions.length ? this.userOptions : this.userAll
       return source.filter(user => !this.memberIds.includes(user.userId))
+    },
+    filteredAvailableUsers() {
+      if (!this.userSearchName) {
+        return this.availableUsers
+      }
+      return this.availableUsers.filter(user => String(user.nickName || "").includes(this.userSearchName))
     }
   },
   created() {
@@ -100,6 +155,18 @@ export default {
       this.userSearchName = ""
       this.userOptions = this.userAll
     },
+    searchSelectedMembers() {
+      // 由 computed 过滤
+    },
+    resetSelectedSearch() {
+      this.selectedSearchName = ""
+    },
+    handleSelectedSelectionChange(selection) {
+      this.selectedSelection = selection || []
+    },
+    handleAvailableSelectionChange(selection) {
+      this.availableSelection = selection || []
+    },
     addMember(user) {
       if (!this.memberIds.includes(user.userId)) {
         this.memberIds.push(user.userId)
@@ -109,6 +176,31 @@ export default {
     removeMember(userId) {
       this.memberIds = this.memberIds.filter(id => id !== userId)
       this.saveMembers()
+    },
+    addSelectedMembers() {
+      if (!this.availableSelection.length) return
+      this.availableSelection.forEach(user => {
+        if (!this.memberIds.includes(user.userId)) {
+          this.memberIds.push(user.userId)
+        }
+      })
+      this.saveMembers()
+      this.availableSelection = []
+      this.clearTableSelection("availableTable")
+    },
+    removeSelectedMembers() {
+      if (!this.selectedSelection.length) return
+      const ids = this.selectedSelection.map(user => user.userId)
+      this.memberIds = this.memberIds.filter(id => !ids.includes(id))
+      this.saveMembers()
+      this.selectedSelection = []
+      this.clearTableSelection("selectedTable")
+    },
+    clearTableSelection(refName) {
+      const table = this.$refs[refName]
+      if (table && table.clearSelection) {
+        table.clearSelection()
+      }
     },
     storageKey() {
       return `ipms_agenda_members_${this.meetingId}_${this.topicKey}`

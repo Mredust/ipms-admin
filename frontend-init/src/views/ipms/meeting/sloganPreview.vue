@@ -4,7 +4,7 @@
       <div class="slogan-main" :style="mainStyle">
         {{ slogan.welcomeText }}
       </div>
-      <div class="slogan-sub" :style="subStyle">
+      <div v-if="slogan.usingText" class="slogan-sub" :style="subStyle">
         {{ slogan.usingText }}
       </div>
     </div>
@@ -18,7 +18,7 @@ export default {
     return {
       slogan: {
         welcomeText: "欢迎您莅临此次会议",
-        usingText: "使用中",
+        usingText: "",
         mainFont: "方正小标宋简体",
         mainColor: "#ffffff",
         mainSize: "8em",
@@ -56,7 +56,10 @@ export default {
     if (raw) {
       try {
         const data = JSON.parse(raw)
-        this.slogan = { ...this.slogan, ...data }
+        if (data && Object.prototype.hasOwnProperty.call(data, "usingText")) {
+          delete data.usingText
+        }
+        this.slogan = { ...this.slogan, ...data, usingText: "" }
       } catch (e) {
         // ignore parse error
       }
