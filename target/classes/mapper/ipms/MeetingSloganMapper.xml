@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ipms.mapper.MeetingSloganMapper">
+    
+    <resultMap type="MeetingSlogan" id="MeetingSloganResult">
+        <result property="id"    column="id"    />
+        <result property="welcomeText"    column="welcome_text"    />
+        <result property="mainTitleFont"    column="main_title_font"    />
+        <result property="mainTitleColor"    column="main_title_color"    />
+        <result property="mainTitleSize"    column="main_title_size"    />
+        <result property="otherFont"    column="other_font"    />
+        <result property="otherColor"    column="other_color"    />
+        <result property="otherSize"    column="other_size"    />
+        <result property="backgroundUrl"    column="background_url"    />
+    </resultMap>
+
+    <sql id="selectMeetingSloganVo">
+        select id, welcome_text, main_title_font, main_title_color, main_title_size, other_font, other_color, other_size, background_url from meeting_slogan
+    </sql>
+
+    <select id="selectMeetingSloganList" parameterType="MeetingSlogan" resultMap="MeetingSloganResult">
+        <include refid="selectMeetingSloganVo"/>
+        <where>  
+            <if test="welcomeText != null  and welcomeText != ''"> and welcome_text = #{welcomeText}</if>
+            <if test="mainTitleFont != null  and mainTitleFont != ''"> and main_title_font = #{mainTitleFont}</if>
+            <if test="mainTitleColor != null  and mainTitleColor != ''"> and main_title_color = #{mainTitleColor}</if>
+            <if test="mainTitleSize != null  and mainTitleSize != ''"> and main_title_size = #{mainTitleSize}</if>
+            <if test="otherFont != null  and otherFont != ''"> and other_font = #{otherFont}</if>
+            <if test="otherColor != null  and otherColor != ''"> and other_color = #{otherColor}</if>
+            <if test="otherSize != null  and otherSize != ''"> and other_size = #{otherSize}</if>
+            <if test="backgroundUrl != null  and backgroundUrl != ''"> and background_url = #{backgroundUrl}</if>
+        </where>
+    </select>
+    
+    <select id="selectMeetingSloganById" parameterType="Long" resultMap="MeetingSloganResult">
+        <include refid="selectMeetingSloganVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMeetingSlogan" parameterType="MeetingSlogan" useGeneratedKeys="true" keyProperty="id">
+        insert into meeting_slogan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="welcomeText != null">welcome_text,</if>
+            <if test="mainTitleFont != null">main_title_font,</if>
+            <if test="mainTitleColor != null">main_title_color,</if>
+            <if test="mainTitleSize != null">main_title_size,</if>
+            <if test="otherFont != null">other_font,</if>
+            <if test="otherColor != null">other_color,</if>
+            <if test="otherSize != null">other_size,</if>
+            <if test="backgroundUrl != null">background_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="welcomeText != null">#{welcomeText},</if>
+            <if test="mainTitleFont != null">#{mainTitleFont},</if>
+            <if test="mainTitleColor != null">#{mainTitleColor},</if>
+            <if test="mainTitleSize != null">#{mainTitleSize},</if>
+            <if test="otherFont != null">#{otherFont},</if>
+            <if test="otherColor != null">#{otherColor},</if>
+            <if test="otherSize != null">#{otherSize},</if>
+            <if test="backgroundUrl != null">#{backgroundUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMeetingSlogan" parameterType="MeetingSlogan">
+        update meeting_slogan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="welcomeText != null">welcome_text = #{welcomeText},</if>
+            <if test="mainTitleFont != null">main_title_font = #{mainTitleFont},</if>
+            <if test="mainTitleColor != null">main_title_color = #{mainTitleColor},</if>
+            <if test="mainTitleSize != null">main_title_size = #{mainTitleSize},</if>
+            <if test="otherFont != null">other_font = #{otherFont},</if>
+            <if test="otherColor != null">other_color = #{otherColor},</if>
+            <if test="otherSize != null">other_size = #{otherSize},</if>
+            <if test="backgroundUrl != null">background_url = #{backgroundUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMeetingSloganById" parameterType="Long">
+        delete from meeting_slogan where id = #{id}
+    </delete>
+
+    <delete id="deleteMeetingSloganByIds" parameterType="String">
+        delete from meeting_slogan where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

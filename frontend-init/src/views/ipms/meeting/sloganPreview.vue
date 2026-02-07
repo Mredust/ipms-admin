@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="slogan-preview" :style="backgroundStyle">
     <div class="slogan-content">
       <div class="slogan-main" :style="mainStyle">
@@ -80,17 +80,20 @@ export default {
 .slogan-preview {
   width: 100%;
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
 .slogan-content {
+  position: absolute;
+  top: 33.33%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
   padding: 24px;
+  width: 100%;
 }
 
 .slogan-main {

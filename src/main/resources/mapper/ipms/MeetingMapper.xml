@@ -18,13 +18,18 @@
         <result property="featureSelect"    column="feature_select"    />
         <result property="logo"    column="logo"    />
         <result property="seatChart"    column="seat_chart"    />
+        <result property="padBgUrl"    column="pad_bg_url"    />
+        <result property="webBgUrl"    column="web_bg_url"    />
+        <result property="sloganId"    column="slogan_id"    />
+        <result property="voteIds"    column="vote_ids"    />
+        <result property="agendaId"    column="agenda_id"    />
         <result property="createTime"    column="create_time"    />
         <result property="updateTime"    column="update_time"    />
         <result property="status"    column="status"    />
     </resultMap>
 
     <sql id="selectMeetingVo">
-        select id, scope, meeting_name, subtitle, start_time, end_time, room_id, host_id, assistant_id, type_id, feature_select, logo, seat_chart, create_time, update_time,status from meeting
+        select id, scope, meeting_name, subtitle, start_time, end_time, room_id, host_id, assistant_id, type_id, feature_select, logo, seat_chart, pad_bg_url, web_bg_url, slogan_id, vote_ids, agenda_id, create_time, update_time,status from meeting
     </sql>
 
     <select id="selectMeetingList" parameterType="Meeting" resultMap="MeetingResult">
@@ -54,6 +59,11 @@
             <if test="featureSelect != null">feature_select,</if>
             <if test="logo != null">logo,</if>
             <if test="seatChart != null">seat_chart,</if>
+            <if test="padBgUrl != null">pad_bg_url,</if>
+            <if test="webBgUrl != null">web_bg_url,</if>
+            <if test="sloganId != null">slogan_id,</if>
+            <if test="voteIds != null">vote_ids,</if>
+            <if test="agendaId != null">agenda_id,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
@@ -71,6 +81,11 @@
             <if test="featureSelect != null">#{featureSelect},</if>
             <if test="logo != null">#{logo},</if>
             <if test="seatChart != null">#{seatChart},</if>
+            <if test="padBgUrl != null">#{padBgUrl},</if>
+            <if test="webBgUrl != null">#{webBgUrl},</if>
+            <if test="sloganId != null">#{sloganId},</if>
+            <if test="voteIds != null">#{voteIds},</if>
+            <if test="agendaId != null">#{agendaId},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
@@ -92,6 +107,11 @@
             <if test="featureSelect != null">feature_select = #{featureSelect},</if>
             <if test="logo != null">logo = #{logo},</if>
             <if test="seatChart != null">seat_chart = #{seatChart},</if>
+            <if test="padBgUrl != null">pad_bg_url = #{padBgUrl},</if>
+            <if test="webBgUrl != null">web_bg_url = #{webBgUrl},</if>
+            <if test="sloganId != null">slogan_id = #{sloganId},</if>
+            <if test="voteIds != null">vote_ids = #{voteIds},</if>
+            <if test="agendaId != null">agenda_id = #{agendaId},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null">status = #{status},</if>
@@ -109,4 +129,10 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectMeetingIdsByVoteId" resultType="Long">
+        select id from meeting
+        where vote_ids is not null
+        and find_in_set(#{voteId}, vote_ids)
+    </select>
 </mapper>

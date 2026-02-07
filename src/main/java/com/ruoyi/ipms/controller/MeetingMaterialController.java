@@ -76,8 +76,10 @@ public class MeetingMaterialController extends BaseController {
     @PreAuthorize("@ss.hasPermi('ipms:material:add')")
     @Log(title = "会议资料", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestParam("file") MultipartFile file) {
-        return saveMaterial(file, null);
+    public AjaxResult add(@RequestParam("file") MultipartFile file,
+                          @RequestParam(value = "meetingId", required = false) Long meetingId,
+                          @RequestParam(value = "agendaId", required = false) Long agendaId) {
+        return saveMaterial(file, null, meetingId, agendaId);
     }
 
     /**
@@ -86,8 +88,11 @@ public class MeetingMaterialController extends BaseController {
     @PreAuthorize("@ss.hasPermi('ipms:material:edit')")
     @Log(title = "会议资料", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestParam("id") Long id, @RequestParam("file") MultipartFile file) {
-        return saveMaterial(file, id);
+    public AjaxResult edit(@RequestParam("id") Long id,
+                           @RequestParam("file") MultipartFile file,
+                           @RequestParam(value = "meetingId", required = false) Long meetingId,
+                           @RequestParam(value = "agendaId", required = false) Long agendaId) {
+        return saveMaterial(file, id, meetingId, agendaId);
     }
 
     /**
@@ -100,7 +105,7 @@ public class MeetingMaterialController extends BaseController {
         return toAjax(meetingMaterialService.deleteMeetingMaterialByIds(ids));
     }
 
-    private AjaxResult saveMaterial(MultipartFile file, Long id) {
+    private AjaxResult saveMaterial(MultipartFile file, Long id, Long meetingId, Long agendaId) {
         if (file == null) {
             return AjaxResult.error("上传文件不能为空");
         }
@@ -116,6 +121,8 @@ public class MeetingMaterialController extends BaseController {
             material.setFileSize(calcFileSizeKb(file.getSize()));
             material.setFileSort(0L);
             material.setOpenDownload(serverConfig.getUrl() + storedFile);
+            material.setMeetingId(meetingId);
+            material.setAgendaId(agendaId);
 
             int rows = (id == null)
                     ? meetingMaterialService.insertMeetingMaterial(material)

@@ -172,6 +172,25 @@ export const dynamicRoutes = [
         meta: { title: '\u8bae\u9898\u4eba\u5458', activeMenu: '/ipms/meeting' }
       }
     ]
+  },
+  {
+    path: '/mt',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'material',
+        component: () => import('@/views/ipms/material'),
+        name: 'MeetingMaterial',
+        meta: { title: '\u4f1a\u8bae\u8d44\u6599', activeMenu: '/ipms/meeting' }
+      },
+      {
+        path: 'vote',
+        component: () => import('@/views/ipms/vote'),
+        name: 'MeetingVote',
+        meta: { title: '\u4f1a\u8bae\u6295\u7968', activeMenu: '/ipms/meeting' }
+      }
+    ]
   }
 
 ]

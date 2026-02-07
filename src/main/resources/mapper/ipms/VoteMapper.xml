@@ -8,6 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="voteTitle"    column="vote_title"    />
         <result property="agendaId"    column="agenda_id"    />
+        <result property="voteRes"    column="vote_res"    />
         <result property="voteMode"    column="vote_mode"    />
         <result property="showSwitch"    column="show_switch"    />
         <result property="anonymousSwitch"    column="anonymous_switch"    />
@@ -17,13 +18,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectVoteVo">
-        select id, vote_title, agenda_id, vote_mode, show_switch, anonymous_switch, remark, create_time, update_time from vote
+        select id, vote_title, agenda_id, vote_res, vote_mode, show_switch, anonymous_switch, remark, create_time, update_time from vote
     </sql>
 
     <select id="selectVoteList" parameterType="Vote" resultMap="VoteResult">
         <include refid="selectVoteVo"/>
         <where>  
             <if test="voteTitle != null  and voteTitle != ''"> and vote_title = #{voteTitle}</if>
+            <if test="voteRes != null"> and vote_res = #{voteRes}</if>
         </where>
     </select>
     
@@ -32,11 +34,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
 
+    <select id="selectVoteByIds" parameterType="java.util.List" resultMap="VoteResult">
+        <include refid="selectVoteVo"/>
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach item="id" collection="ids" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
     <insert id="insertVote" parameterType="Vote" useGeneratedKeys="true" keyProperty="id">
         insert into vote
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="voteTitle != null">vote_title,</if>
             <if test="agendaId != null">agenda_id,</if>
+            <if test="voteRes != null">vote_res,</if>
             <if test="voteMode != null and voteMode != ''">vote_mode,</if>
             <if test="showSwitch != null">show_switch,</if>
             <if test="anonymousSwitch != null">anonymous_switch,</if>
@@ -47,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="voteTitle != null">#{voteTitle},</if>
             <if test="agendaId != null">#{agendaId},</if>
+            <if test="voteRes != null">#{voteRes},</if>
             <if test="voteMode != null and voteMode != ''">#{voteMode},</if>
             <if test="showSwitch != null">#{showSwitch},</if>
             <if test="anonymousSwitch != null">#{anonymousSwitch},</if>
@@ -61,6 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="voteTitle != null">vote_title = #{voteTitle},</if>
             <if test="agendaId != null">agenda_id = #{agendaId},</if>
+            <if test="voteRes != null">vote_res = #{voteRes},</if>
             <if test="voteMode != null and voteMode != ''">vote_mode = #{voteMode},</if>
             <if test="showSwitch != null">show_switch = #{showSwitch},</if>
             <if test="anonymousSwitch != null">anonymous_switch = #{anonymousSwitch},</if>

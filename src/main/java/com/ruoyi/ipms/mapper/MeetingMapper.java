@@ -1,6 +1,7 @@
 package com.ruoyi.ipms.mapper;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 import com.ruoyi.ipms.domain.Meeting;
 
 /**
@@ -58,4 +59,12 @@ public interface MeetingMapper
      * @return 结果
      */
     public int deleteMeetingByIds(Long[] ids);
+
+    /**
+     * 根据投票ID查询会议ID列表
+     *
+     * @param voteId 投票ID
+     * @return 会议ID列表
+     */
+    public List<Long> selectMeetingIdsByVoteId(@Param("voteId") Long voteId);
 }

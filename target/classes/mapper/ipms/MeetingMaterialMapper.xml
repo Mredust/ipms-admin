@@ -46,6 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="fileSize != null">#{fileSize},</if>
             <if test="fileSort != null">#{fileSort},</if>
             <if test="openDownload != null">#{openDownload},</if>
+            <if test="agendaId != null">#{agendaId},</if>
             <if test="createTime != null">#{createTime},</if>
          </trim>
     </insert>

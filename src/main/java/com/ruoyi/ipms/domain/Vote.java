@@ -1,4 +1,4 @@
-package com.ruoyi.system.domain;
+package com.ruoyi.ipms.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -26,6 +26,9 @@ public class Vote extends BaseEntity
     @Excel(name = "关联议程主题")
     private Long agendaId;
 
+    /** 会议ID */
+    private Long meetingId;
+
     /** 投票模式 */
     @Excel(name = "投票模式")
     private String voteMode;
@@ -38,64 +41,87 @@ public class Vote extends BaseEntity
     @Excel(name = "投票匿名开关：0-关闭，1-开启")
     private Integer anonymousSwitch;
 
-    public void setId(Long id) 
+    /** 投票结果JSON */
+    private String voteRes;
+
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
 
-    public void setVoteTitle(String voteTitle) 
+    public void setVoteTitle(String voteTitle)
     {
         this.voteTitle = voteTitle;
     }
 
-    public String getVoteTitle() 
+    public String getVoteTitle()
     {
         return voteTitle;
     }
 
-    public void setAgendaId(Long agendaId) 
+    public void setAgendaId(Long agendaId)
     {
         this.agendaId = agendaId;
     }
 
-    public Long getAgendaId() 
+    public Long getAgendaId()
     {
         return agendaId;
     }
 
-    public void setVoteMode(String voteMode) 
+    public void setMeetingId(Long meetingId)
+    {
+        this.meetingId = meetingId;
+    }
+
+    public Long getMeetingId()
+    {
+        return meetingId;
+    }
+
+    public void setVoteMode(String voteMode)
     {
         this.voteMode = voteMode;
     }
 
-    public String getVoteMode() 
+    public String getVoteMode()
     {
         return voteMode;
     }
 
-    public void setShowSwitch(Integer showSwitch) 
+    public void setShowSwitch(Integer showSwitch)
     {
         this.showSwitch = showSwitch;
     }
 
-    public Integer getShowSwitch() 
+    public Integer getShowSwitch()
     {
         return showSwitch;
     }
 
-    public void setAnonymousSwitch(Integer anonymousSwitch) 
+    public void setAnonymousSwitch(Integer anonymousSwitch)
     {
         this.anonymousSwitch = anonymousSwitch;
     }
 
-    public Integer getAnonymousSwitch() 
+    public Integer getAnonymousSwitch()
     {
         return anonymousSwitch;
+    }
+
+    public void setVoteRes(String voteRes)
+    {
+        this.voteRes = voteRes;
+    }
+
+    public String getVoteRes()
+    {
+        return voteRes;
     }
 
     @Override
@@ -104,9 +130,11 @@ public class Vote extends BaseEntity
             .append("id", getId())
             .append("voteTitle", getVoteTitle())
             .append("agendaId", getAgendaId())
+            .append("meetingId", getMeetingId())
             .append("voteMode", getVoteMode())
             .append("showSwitch", getShowSwitch())
             .append("anonymousSwitch", getAnonymousSwitch())
+            .append("voteRes", getVoteRes())
             .append("remark", getRemark())
             .append("createTime", getCreateTime())
             .append("updateTime", getUpdateTime())

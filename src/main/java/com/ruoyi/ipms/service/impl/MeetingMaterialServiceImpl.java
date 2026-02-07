@@ -1,5 +1,6 @@
 package com.ruoyi.ipms.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,9 @@ import org.springframework.stereotype.Service;
 import com.ruoyi.ipms.mapper.MeetingMaterialMapper;
 import com.ruoyi.ipms.domain.MeetingMaterial;
 import com.ruoyi.ipms.service.IMeetingMaterialService;
+import com.ruoyi.ipms.domain.Meeting;
+import com.ruoyi.ipms.mapper.MeetingMapper;
+import com.ruoyi.ipms.service.IMeetingAgendaService;
 
 /**
  * 会议资料Service业务层处理
@@ -19,6 +23,12 @@ public class MeetingMaterialServiceImpl implements IMeetingMaterialService
 {
     @Autowired
     private MeetingMaterialMapper meetingMaterialMapper;
+
+    @Autowired
+    private MeetingMapper meetingMapper;
+
+    @Autowired
+    private IMeetingAgendaService meetingAgendaService;
 
     /**
      * 查询会议资料
@@ -54,7 +64,9 @@ public class MeetingMaterialServiceImpl implements IMeetingMaterialService
     public int insertMeetingMaterial(MeetingMaterial meetingMaterial)
     {
         meetingMaterial.setCreateTime(DateUtils.getNowDate());
-        return meetingMaterialMapper.insertMeetingMaterial(meetingMaterial);
+        int rows = meetingMaterialMapper.insertMeetingMaterial(meetingMaterial);
+        appendAgendaAttachment(meetingMaterial);
+        return rows;
     }
 
     /**
@@ -78,7 +90,25 @@ public class MeetingMaterialServiceImpl implements IMeetingMaterialService
     @Override
     public int deleteMeetingMaterialByIds(Long[] ids)
     {
-        return meetingMaterialMapper.deleteMeetingMaterialByIds(ids);
+        if (ids == null || ids.length == 0)
+        {
+            return 0;
+        }
+        List<MeetingMaterial> materials = new ArrayList<>();
+        for (Long id : ids)
+        {
+            MeetingMaterial material = meetingMaterialMapper.selectMeetingMaterialById(id);
+            if (material != null)
+            {
+                materials.add(material);
+            }
+        }
+        int rows = meetingMaterialMapper.deleteMeetingMaterialByIds(ids);
+        if (rows > 0)
+        {
+            materials.forEach(this::removeAgendaAttachment);
+        }
+        return rows;
     }
 
     /**
@@ -90,6 +120,40 @@ public class MeetingMaterialServiceImpl implements IMeetingMaterialService
     @Override
     public int deleteMeetingMaterialById(Long id)
     {
-        return meetingMaterialMapper.deleteMeetingMaterialById(id);
+        MeetingMaterial material = meetingMaterialMapper.selectMeetingMaterialById(id);
+        int rows = meetingMaterialMapper.deleteMeetingMaterialById(id);
+        if (rows > 0)
+        {
+            removeAgendaAttachment(material);
+        }
+        return rows;
+    }
+
+    private void appendAgendaAttachment(MeetingMaterial material)
+    {
+        if (material == null || material.getMeetingId() == null || material.getAgendaId() == null)
+        {
+            return;
+        }
+        Meeting meeting = meetingMapper.selectMeetingById(material.getMeetingId());
+        if (meeting == null || meeting.getAgendaId() == null)
+        {
+            return;
+        }
+        meetingAgendaService.appendAgendaAttachment(meeting.getAgendaId(), material.getAgendaId(), material.getId());
+    }
+
+    private void removeAgendaAttachment(MeetingMaterial material)
+    {
+        if (material == null || material.getMeetingId() == null || material.getAgendaId() == null)
+        {
+            return;
+        }
+        Meeting meeting = meetingMapper.selectMeetingById(material.getMeetingId());
+        if (meeting == null || meeting.getAgendaId() == null)
+        {
+            return;
+        }
+        meetingAgendaService.removeAgendaAttachment(meeting.getAgendaId(), material.getAgendaId(), material.getId());
     }
 }

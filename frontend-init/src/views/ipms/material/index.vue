@@ -67,9 +67,14 @@
       <el-table-column label="文件类型" align="center" prop="fileType" />
       <el-table-column label="文件大小(KB)" align="center" prop="fileSize" />
       <el-table-column label="文件排序" align="center" prop="fileSort" />
-      <el-table-column label="打开/下载链接" align="center" prop="openDownload" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-download"
+            @click="handleDownload(scope.row)"
+          >下载文件</el-button>
           <el-button
             size="mini"
             type="text"
@@ -158,6 +163,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         fileName: null,
+        meetingId: null,
+        agendaId: null
       },
       // 表单参数
       form: {},
@@ -166,6 +173,8 @@ export default {
     }
   },
   created() {
+    this.queryParams.meetingId = this.$route.query.meetingId || null
+    this.queryParams.agendaId = this.$route.query.agendaId || null
     this.getList()
   },
   methods: {
@@ -200,6 +209,8 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm")
+      this.queryParams.meetingId = this.$route.query.meetingId || null
+      this.queryParams.agendaId = this.$route.query.agendaId || null
       this.handleQuery()
     },
     // 多选框选中数据
@@ -234,6 +245,12 @@ export default {
       }
       const formData = new FormData()
       formData.append("file", this.uploadFile)
+      if (this.queryParams.meetingId) {
+        formData.append("meetingId", this.queryParams.meetingId)
+      }
+      if (this.queryParams.agendaId) {
+        formData.append("agendaId", this.queryParams.agendaId)
+      }
       if (this.form.id != null) {
         formData.append("id", this.form.id)
         updateMaterial(formData).then(response => {
@@ -274,6 +291,13 @@ export default {
       this.download('ipms/material/export', {
         ...this.queryParams
       }, `material_${new Date().getTime()}.xlsx`)
+    },
+    handleDownload(row) {
+      if (!row || !row.openDownload) {
+        this.$modal.msgWarning("暂无可下载文件")
+        return
+      }
+      window.open(row.openDownload, "_blank")
     }
   }
 }

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.ipms.mapper.MeetingUserRelMapper">
+    
+    <resultMap type="MeetingUserRel" id="MeetingUserRelResult">
+        <result property="id"    column="id"    />
+        <result property="meetingId"    column="meeting_id"    />
+        <result property="userIds"    column="user_ids"    />
+    </resultMap>
+
+    <sql id="selectMeetingUserRelVo">
+        select id, meeting_id, user_ids from meeting_user_rel
+    </sql>
+
+    <select id="selectMeetingUserRelList" parameterType="MeetingUserRel" resultMap="MeetingUserRelResult">
+        <include refid="selectMeetingUserRelVo"/>
+        <where>  
+            <if test="meetingId != null "> and meeting_id = #{meetingId}</if>
+            <if test="userIds != null  and userIds != ''"> and user_ids = #{userIds}</if>
+        </where>
+    </select>
+    
+    <select id="selectMeetingUserRelById" parameterType="Long" resultMap="MeetingUserRelResult">
+        <include refid="selectMeetingUserRelVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMeetingUserRel" parameterType="MeetingUserRel" useGeneratedKeys="true" keyProperty="id">
+        insert into meeting_user_rel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="meetingId != null">meeting_id,</if>
+            <if test="userIds != null">user_ids,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="meetingId != null">#{meetingId},</if>
+            <if test="userIds != null">#{userIds},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMeetingUserRel" parameterType="MeetingUserRel">
+        update meeting_user_rel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="meetingId != null">meeting_id = #{meetingId},</if>
+            <if test="userIds != null">user_ids = #{userIds},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMeetingUserRelById" parameterType="Long">
+        delete from meeting_user_rel where id = #{id}
+    </delete>
+
+    <delete id="deleteMeetingUserRelByIds" parameterType="String">
+        delete from meeting_user_rel where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

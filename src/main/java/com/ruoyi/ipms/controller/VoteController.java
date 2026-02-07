@@ -1,9 +1,11 @@
 package com.ruoyi.ipms.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,10 +18,13 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.system.domain.Vote;
+import com.ruoyi.ipms.domain.Vote;
+import com.ruoyi.ipms.domain.Meeting;
 import com.ruoyi.ipms.service.IVoteService;
+import com.ruoyi.ipms.service.IMeetingService;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.page.TableDataInfo;
+import com.ruoyi.common.utils.StringUtils;
 
 /**
  * 投票Controller
@@ -34,16 +39,61 @@ public class VoteController extends BaseController
     @Autowired
     private IVoteService voteService;
 
+    @Autowired
+    private IMeetingService meetingService;
+
     /**
      * 查询投票列表
      */
     @PreAuthorize("@ss.hasPermi('ipms:vote:list')")
     @GetMapping("/list")
-    public TableDataInfo list(Vote vote)
+    public TableDataInfo list(Vote vote,
+                              @RequestParam(value = "voteIds", required = false) String voteIds,
+                              @RequestParam(value = "meetingId", required = false) Long meetingId)
     {
+        List<Long> idList = parseVoteIds(voteIds);
+        if ((idList == null || idList.isEmpty()) && meetingId != null)
+        {
+            Meeting meeting = meetingService.selectMeetingById(meetingId);
+            if (meeting != null)
+            {
+                idList = parseVoteIds(meeting.getVoteIds());
+            }
+        }
+        if (idList != null && !idList.isEmpty())
+        {
+            startPage();
+            List<Vote> list = voteService.selectVoteByIds(idList);
+            return getDataTable(list);
+        }
         startPage();
         List<Vote> list = voteService.selectVoteList(vote);
         return getDataTable(list);
+    }
+
+    private List<Long> parseVoteIds(String voteIds)
+    {
+        if (StringUtils.isEmpty(voteIds))
+        {
+            return new ArrayList<>();
+        }
+        String[] parts = voteIds.split("[,，]");
+        List<Long> ids = new ArrayList<>();
+        for (String part : parts)
+        {
+            if (StringUtils.isEmpty(part))
+            {
+                continue;
+            }
+            try
+            {
+                ids.add(Long.parseLong(part.trim()));
+            }
+            catch (Exception ignored)
+            {
+            }
+        }
+        return ids;
     }
 
     /**

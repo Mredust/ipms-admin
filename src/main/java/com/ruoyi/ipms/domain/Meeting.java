@@ -69,6 +69,24 @@ public class Meeting extends BaseEntity
     @Excel(name = "座位")
     private String seatChart;
 
+    /** PAD背景 */
+    @Excel(name = "PAD背景")
+    private String padBgUrl;
+
+    /** WEB背景 */
+    @Excel(name = "WEB背景")
+    private String webBgUrl;
+
+    /** 会议标语ID */
+    @Excel(name = "会议标语ID")
+    private Long sloganId;
+
+    /** 投票ID列表 */
+    @Excel(name = "投票ID列表")
+    private String voteIds;
+
+    private Long agendaId;
+
     private Long status;
 
     public Long getStatus() {
@@ -209,6 +227,46 @@ public class Meeting extends BaseEntity
         return seatChart;
     }
 
+    public String getPadBgUrl() {
+        return padBgUrl;
+    }
+
+    public void setPadBgUrl(String padBgUrl) {
+        this.padBgUrl = padBgUrl;
+    }
+
+    public String getWebBgUrl() {
+        return webBgUrl;
+    }
+
+    public void setWebBgUrl(String webBgUrl) {
+        this.webBgUrl = webBgUrl;
+    }
+
+    public Long getSloganId() {
+        return sloganId;
+    }
+
+    public void setSloganId(Long sloganId) {
+        this.sloganId = sloganId;
+    }
+
+    public String getVoteIds() {
+        return voteIds;
+    }
+
+    public void setVoteIds(String voteIds) {
+        this.voteIds = voteIds;
+    }
+
+    public Long getAgendaId() {
+        return agendaId;
+    }
+
+    public void setAgendaId(Long agendaId) {
+        this.agendaId = agendaId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -225,6 +283,11 @@ public class Meeting extends BaseEntity
             .append("featureSelect", getFeatureSelect())
             .append("logo", getLogo())
             .append("seatChart", getSeatChart())
+            .append("padBgUrl", getPadBgUrl())
+            .append("webBgUrl", getWebBgUrl())
+            .append("sloganId", getSloganId())
+            .append("voteIds", getVoteIds())
+            .append("agendaId", getAgendaId())
             .append("createTime", getCreateTime())
             .append("updateTime", getUpdateTime())
             .toString();

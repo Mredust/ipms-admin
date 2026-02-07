@@ -1,8 +1,9 @@
 package com.ruoyi.ipms.mapper;
 
-import com.ruoyi.system.domain.Vote;
+import com.ruoyi.ipms.domain.Vote;
 
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 投票Mapper接口
@@ -26,6 +27,14 @@ public interface VoteMapper {
      * @return 投票集合
      */
     public List<Vote> selectVoteList(Vote vote);
+
+    /**
+     * 根据ID列表查询投票
+     *
+     * @param ids 投票ID列表
+     * @return 投票集合
+     */
+    public List<Vote> selectVoteByIds(@Param("ids") List<Long> ids);
 
     /**
      * 新增投票

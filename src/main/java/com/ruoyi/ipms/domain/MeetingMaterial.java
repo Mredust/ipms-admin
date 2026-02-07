@@ -39,6 +39,14 @@ public class MeetingMaterial extends BaseEntity
     @Excel(name = "打开/下载链接")
     private String openDownload;
 
+    /** 会议ID */
+    @Excel(name = "会议ID")
+    private Long meetingId;
+
+    /** 议题ID */
+    @Excel(name = "议题ID")
+    private Long agendaId;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -99,6 +107,26 @@ public class MeetingMaterial extends BaseEntity
         return openDownload;
     }
 
+    public void setMeetingId(Long meetingId) 
+    {
+        this.meetingId = meetingId;
+    }
+
+    public Long getMeetingId() 
+    {
+        return meetingId;
+    }
+
+    public void setAgendaId(Long agendaId) 
+    {
+        this.agendaId = agendaId;
+    }
+
+    public Long getAgendaId() 
+    {
+        return agendaId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -108,6 +136,8 @@ public class MeetingMaterial extends BaseEntity
             .append("fileSize", getFileSize())
             .append("fileSort", getFileSort())
             .append("openDownload", getOpenDownload())
+            .append("meetingId", getMeetingId())
+            .append("agendaId", getAgendaId())
             .append("createTime", getCreateTime())
             .toString();
     }
